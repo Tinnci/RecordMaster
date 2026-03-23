@@ -99,6 +99,21 @@ android {
     }
 }
 
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.outputs.forEach { output ->
+            output.outputFileName.set(
+                providers.provider {
+                    val packageName = variant.applicationId.get().replace('.', '-')
+                    val versionName = output.versionName.get().replace(Regex("[^A-Za-z0-9._-]"), "-")
+                    val versionCode = output.versionCode.get()
+                    "$packageName-$versionName-$versionCode-${variant.name}.apk"
+                }
+            )
+        }
+    }
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
