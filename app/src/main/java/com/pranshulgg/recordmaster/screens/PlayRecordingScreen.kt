@@ -31,6 +31,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,13 +61,14 @@ import kotlin.system.measureNanoTime
 fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: NavController) {
     val context = LocalContext.current
     val file = remember { File(filePath) }
+    val locale = LocalLocale.current.platformLocale
 
     val player = remember { mutableStateOf<MediaPlayer?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
-    var currentPos by remember { mutableStateOf(0) }
-    var duration by remember { mutableStateOf(0) }
-    val sdfDate = SimpleDateFormat("MMM dd", Locale.getDefault())
-    val sdfTime = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    var currentPos by remember { mutableIntStateOf(0) }
+    var duration by remember { mutableIntStateOf(0) }
+    val sdfDate = remember(locale) { SimpleDateFormat("MMM dd", locale) }
+    val sdfTime = remember(locale) { SimpleDateFormat("hh:mm a", locale) }
 
     val date = sdfDate.format(Date(file.lastModified()))
     val time = sdfTime.format(Date(file.lastModified()))
@@ -197,7 +199,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
 
             val displayBarCount = min(staticAmpsState.value?.size ?: requestedBarCount, maxVisibleBars)
 
-            var uiProgress by remember { mutableStateOf(0f) }
+            var uiProgress by remember { mutableFloatStateOf(0f) }
             var isUserSeeking by remember { mutableStateOf(false) }
 
 
@@ -433,7 +435,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
 private fun formatMs(ms: Int): String {
     val minutes = TimeUnit.MILLISECONDS.toMinutes(ms.toLong())
     val seconds = TimeUnit.MILLISECONDS.toSeconds(ms.toLong()) - TimeUnit.MINUTES.toSeconds(minutes)
-    return String.format("%02d:%02d", minutes, seconds)
+    return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 }
 
 suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray = withContext(Dispatchers.IO) {
@@ -657,7 +659,7 @@ private fun WaveformBars(
         waveformHistory.addLast(curTargets)
         if (waveformHistory.size > 8) waveformHistory.removeFirst()
 
-        val averaged = FloatArray(barCount) { 0f }
+        val averaged = FloatArray(barCount)
         waveformHistory.forEach { arr ->
             for (i in 0 until barCount) averaged[i] += arr[i]
         }
@@ -665,7 +667,7 @@ private fun WaveformBars(
         for (i in 0 until barCount) targetAmps[i] = (averaged[i] * inv).coerceIn(0f, 1f)
 
         if (barCount >= 3) {
-            val tmp = FloatArray(barCount) { 0f }
+            val tmp = FloatArray(barCount)
             for (i in 0 until barCount) {
                 val prev = if (i - 1 >= 0) targetAmps[i - 1] else targetAmps[i]
                 val next = if (i + 1 < barCount) targetAmps[i + 1] else targetAmps[i]
@@ -697,7 +699,7 @@ private fun WaveformBars(
     val density = LocalDensity.current
     val color = MaterialTheme.colorScheme
 
-    var viewportWidthPx by remember { mutableStateOf(0) }
+    var viewportWidthPx by remember { mutableIntStateOf(0) }
 
     val barWidthPx = with(density) { barWidth.toPx() }
     val spacingPx = with(density) { barSpacing.toPx() }

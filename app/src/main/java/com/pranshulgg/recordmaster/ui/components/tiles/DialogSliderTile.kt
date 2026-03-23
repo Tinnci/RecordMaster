@@ -50,7 +50,7 @@ fun DialogSliderTile(
     isDescriptionAsValue: Boolean = false
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var sliderValue by remember { mutableStateOf(initialValue) }
+    var sliderValue by remember { mutableFloatStateOf(initialValue) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),

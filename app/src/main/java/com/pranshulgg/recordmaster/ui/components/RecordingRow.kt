@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,13 +66,14 @@ fun RecordingRow(
     isSelected: Boolean = false
 ) {
     val context = LocalContext.current
+    val locale = LocalLocale.current.platformLocale
     val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-    val sdfDate = SimpleDateFormat("MMM dd", Locale.getDefault())
-    val sdfTime = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    val sdfDate = remember(locale) { SimpleDateFormat("MMM dd", locale) }
+    val sdfTime = remember(locale) { SimpleDateFormat("hh:mm a", locale) }
     val date = sdfDate.format(Date(file.lastModified()))
     val time = sdfTime.format(Date(file.lastModified()))
 
@@ -86,7 +88,7 @@ fun RecordingRow(
     }
 
 
-    var fileDurationMillis by remember { mutableStateOf(0) }
+    var fileDurationMillis by remember { mutableIntStateOf(0) }
     LaunchedEffect(file.absolutePath) {
         try {
             val mmr = MediaMetadataRetriever()
@@ -99,7 +101,7 @@ fun RecordingRow(
         }
     }
 
-    var lastPosition by remember { mutableStateOf(0) }
+    var lastPosition by remember { mutableIntStateOf(0) }
 
     val displayCurrent = if (isThisPlaying) {
         lastPosition = currentPositionMillis

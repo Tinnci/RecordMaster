@@ -49,6 +49,7 @@ import androidx.navigation.NavController
 import com.pranshulgg.recordmaster.R
 import kotlinx.coroutines.launch
 import java.io.File
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -268,9 +269,9 @@ fun formatDuration(ms: Long): String {
     val seconds = totalSeconds % 60
 
     return if (hours > 0)
-        String.format("%d:%02d:%02d", hours, minutes, seconds)
+        String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
     else
-        String.format("%02d:%02d", minutes, seconds)
+        String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 }
 
 fun formatFileSize(bytes: Long): String {
@@ -279,9 +280,9 @@ fun formatFileSize(bytes: Long): String {
     val gb = mb * 1024
 
     return when {
-        bytes >= gb -> String.format("%.2f GB", bytes / gb)
-        bytes >= mb -> String.format("%.2f MB", bytes / mb)
-        bytes >= kb -> String.format("%.2f KB", bytes / kb)
+        bytes >= gb -> String.format(Locale.getDefault(), "%.2f GB", bytes / gb)
+        bytes >= mb -> String.format(Locale.getDefault(), "%.2f MB", bytes / mb)
+        bytes >= kb -> String.format(Locale.getDefault(), "%.2f KB", bytes / kb)
         else -> "$bytes B"
     }
 }

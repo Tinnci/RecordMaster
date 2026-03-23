@@ -41,6 +41,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
@@ -66,12 +67,16 @@ var mainTitle = "Record"
 @Composable
 fun RecordingScreen(onDone: () -> Unit) {
     val context = LocalContext.current
+    val locale = LocalLocale.current.platformLocale
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
     var isRecording by remember { mutableStateOf(false) }
     var isPaused by remember { mutableStateOf(false) }
-    var elapsedSeconds by remember { mutableStateOf(0L) }
+    var elapsedSeconds by remember { mutableLongStateOf(0L) }
+    val recordingSubtitleFormatter = remember(locale) {
+        SimpleDateFormat("MMM dd 'at' h:mm a", locale)
+    }
 
     val recorderRef = remember { mutableStateOf<MediaRecorder?>(null) }
     val outputFileRef = remember { mutableStateOf<File?>(null) }
@@ -159,7 +164,7 @@ fun RecordingScreen(onDone: () -> Unit) {
         topBar = {
             TopAppBar(
                 title = {Text(mainTitle)},
-                subtitle = {Text(SimpleDateFormat("MMM dd 'at' h:mm a", Locale.getDefault()).format(Date()))},
+                subtitle = { Text(recordingSubtitleFormatter.format(Date())) },
                 navigationIcon = {
                     IconButton(
                         onClick = {onDone()}
@@ -303,54 +308,38 @@ fun RecordingScreen(onDone: () -> Unit) {
                                             }
 
                                             isRecording && !isPaused -> {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                    try {
-                                                        recorderRef.value?.pause()
-                                                        isPaused = true
-                                                        coroutineScope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Paused"
-                                                            )
-                                                        }
-                                                    } catch (e: Exception) {
-                                                        Log.w("RecordingScreen", "pause failed", e)
-                                                        coroutineScope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Pause failed on this device"
-                                                            )
-                                                        }
-                                                    }
-                                                } else {
+                                                try {
+                                                    recorderRef.value?.pause()
+                                                    isPaused = true
                                                     coroutineScope.launch {
                                                         snackbarHostState.showSnackbar(
-                                                            "Pause not supported on this device"
+                                                            "Paused"
+                                                        )
+                                                    }
+                                                } catch (e: Exception) {
+                                                    Log.w("RecordingScreen", "pause failed", e)
+                                                    coroutineScope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Pause failed on this device"
                                                         )
                                                     }
                                                 }
                                             }
 
                                             isRecording && isPaused -> {
-                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                                    try {
-                                                        recorderRef.value?.resume()
-                                                        isPaused = false
-                                                        coroutineScope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Resumed"
-                                                            )
-                                                        }
-                                                    } catch (e: Exception) {
-                                                        Log.w("RecordingScreen", "resume failed", e)
-                                                        coroutineScope.launch {
-                                                            snackbarHostState.showSnackbar(
-                                                                "Resume failed on this device"
-                                                            )
-                                                        }
-                                                    }
-                                                } else {
+                                                try {
+                                                    recorderRef.value?.resume()
+                                                    isPaused = false
                                                     coroutineScope.launch {
                                                         snackbarHostState.showSnackbar(
-                                                            "Resume not supported on this device"
+                                                            "Resumed"
+                                                        )
+                                                    }
+                                                } catch (e: Exception) {
+                                                    Log.w("RecordingScreen", "resume failed", e)
+                                                    coroutineScope.launch {
+                                                        snackbarHostState.showSnackbar(
+                                                            "Resume failed on this device"
                                                         )
                                                     }
                                                 }
@@ -562,5 +551,9 @@ private fun formatElapsed(seconds: Long): String {
     val h = seconds / 3600
     val m = (seconds % 3600) / 60
     val s = seconds % 60
-    return if (h > 0) String.format("%02d:%02d:%02d", h, m, s) else String.format("%02d:%02d", m, s)
+    return if (h > 0) {
+        String.format(Locale.getDefault(), "%02d:%02d:%02d", h, m, s)
+    } else {
+        String.format(Locale.getDefault(), "%02d:%02d", m, s)
+    }
 }

@@ -41,6 +41,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -77,6 +80,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostState){
     val context = LocalContext.current
+    val locale = LocalLocale.current.platformLocale
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     var currentTab by remember { mutableStateOf("home") }
     val scope = rememberCoroutineScope()
@@ -103,7 +107,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
 
     var showDeleteFolderDialog by remember { mutableStateOf(false) }
     var folderToDeleteName by remember { mutableStateOf<String?>(null) }
-    var selectedFolderKey by remember { mutableStateOf(0L) }
+    var selectedFolderKey by remember { mutableLongStateOf(0L) }
 
     val showMessage: suspend (String) -> Unit = { msg ->
         snackbarHostState.currentSnackbarData?.dismiss()
@@ -118,8 +122,8 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
         File(musicDir, "garbage").apply { if (!exists()) mkdirs() }
     }
 
-    var rootDirKey by remember { mutableStateOf(0L) }
-    var garbageDirKey by remember { mutableStateOf(0L) }
+    var rootDirKey by remember { mutableLongStateOf(0L) }
+    var garbageDirKey by remember { mutableLongStateOf(0L) }
 
 
     fun toggleSelection(path: String) {
@@ -357,8 +361,8 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
 
 
                 var isPlaying by remember { mutableStateOf(false) }
-                var currentPos by remember { mutableStateOf(0) }
-                var duration by remember { mutableStateOf(0) }
+                var currentPos by remember { mutableIntStateOf(0) }
+                var duration by remember { mutableIntStateOf(0) }
 
                 LaunchedEffect(isPlaying, mediaPlayer.value) {
                     while (isPlaying && mediaPlayer.value != null) {
@@ -392,7 +396,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                 if (displayedRecordings.isEmpty()) {
                     EmptyContainerPlaceholder(R.drawable.graphic_eq_24px, "No recordings")
                 } else {
-                    val sdfMonth = SimpleDateFormat("MMMM", Locale.getDefault())
+                    val sdfMonth = remember(locale) { SimpleDateFormat("MMMM", locale) }
                     val grouped = displayedRecordings
                         .groupBy { sdfMonth.format(Date(it.lastModified())) }
                         .entries
