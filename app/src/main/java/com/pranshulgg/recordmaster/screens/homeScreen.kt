@@ -12,8 +12,11 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
@@ -53,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -542,54 +547,53 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                                             if (playingPath == file.absolutePath) playingPath = null
                                             rootDirKey = computeDirKey(musicDir)
                                             garbageDirKey = computeDirKey(garbageDir)
-
-                                        if (currentTab == "folder" && fromParent?.name == selectedFolderName) {
-                                            selectedFolderKey = computeDirKey(File(musicDir, selectedFolderName!!))
-                                        }
-                                    },
-
-                                    onMoved = {
-                                        rootDirKey = computeDirKey(musicDir)
-                                        garbageDirKey = computeDirKey(garbageDir)
-                                        selectedFolderName?.let {
-                                            selectedFolderKey = computeDirKey(File(musicDir, it))
-                                        }
-                                    },
-
-                                    onRenamed = {
-                                        rootDirKey = computeDirKey(musicDir)
-                                        garbageDirKey = computeDirKey(garbageDir)
-                                        selectedFolderName?.let {
-                                            selectedFolderKey = computeDirKey(File(musicDir, it))
-                                        }
-                                    },
-                                    onShowMessage = { message ->
-                                        scope.launch {
-                                            showMessage(message)
-                                        }
-                                    },
-                                    currentTab = currentTab
-
-                                )
-
-                                if (showGarbageConfirmDeleteDialog) {
-                                    ConfirmDialog(
-                                        title = "Delete recording",
-                                        message = "The recording will be permanently deleted and cannot be undone",
-                                        confirmText = "Delete",
-                                        cancelText = "Cancel",
-                                        onConfirm = {
-                                            stopIfPlayingAndCleanup(file, mediaPlayer, playingPath)
-                                            if (file.delete()) { }
-                                            garbageDirKey = computeDirKey(garbageDir)
+                                            if (currentTab == "folder" && fromParent?.name == selectedFolderName) {
+                                                selectedFolderKey = computeDirKey(File(musicDir, selectedFolderName!!))
+                                            }
                                         },
-                                        onDismiss = { showGarbageConfirmDeleteDialog = false }
-                                    )
-                                }
-                            }
 
-                            item {
-                                Spacer(modifier = Modifier.height(140.dp))
+                                        onMoved = {
+                                            rootDirKey = computeDirKey(musicDir)
+                                            garbageDirKey = computeDirKey(garbageDir)
+                                            selectedFolderName?.let {
+                                                selectedFolderKey = computeDirKey(File(musicDir, it))
+                                            }
+                                        },
+
+                                        onRenamed = {
+                                            rootDirKey = computeDirKey(musicDir)
+                                            garbageDirKey = computeDirKey(garbageDir)
+                                            selectedFolderName?.let {
+                                                selectedFolderKey = computeDirKey(File(musicDir, it))
+                                            }
+                                        },
+                                        onShowMessage = { message ->
+                                            scope.launch {
+                                                showMessage(message)
+                                            }
+                                        },
+                                        currentTab = currentTab
+                                    )
+
+                                    if (showGarbageConfirmDeleteDialog) {
+                                        ConfirmDialog(
+                                            title = "Delete recording",
+                                            message = "The recording will be permanently deleted and cannot be undone",
+                                            confirmText = "Delete",
+                                            cancelText = "Cancel",
+                                            onConfirm = {
+                                                stopIfPlayingAndCleanup(file, mediaPlayer, playingPath)
+                                                if (file.delete()) { }
+                                                garbageDirKey = computeDirKey(garbageDir)
+                                            },
+                                            onDismiss = { showGarbageConfirmDeleteDialog = false }
+                                        )
+                                    }
+                                }
+
+                                item {
+                                    Spacer(modifier = Modifier.height(140.dp))
+                                }
                             }
                         }
                     }
@@ -712,6 +716,71 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                         } catch (_: Exception) {}
                         mediaPlayer.value = null
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HomeOverviewPane(
+    currentTab: String,
+    selectedFolderName: String?,
+    recordingCount: Int,
+    onStartRecording: () -> Unit
+) {
+    val title = when (currentTab) {
+        "garbage" -> "Recently deleted"
+        "folder" -> selectedFolderName ?: "Folder recordings"
+        else -> "Your recording library"
+    }
+    val subtitle = when (currentTab) {
+        "garbage" -> "Review items before they are gone for good."
+        "folder" -> "Keep related takes together and jump back into the right context faster."
+        else -> "Capture ideas quickly, then come back to a library that stays easy to scan."
+    }
+    val countLabel = when (recordingCount) {
+        1 -> "1 recording"
+        else -> "$recordingCount recordings"
+    }
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.secondaryContainer
+    ) {
+        Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.88f)
+            )
+            Spacer(modifier = Modifier.height(18.dp))
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.fillMaxWidth(0.58f)) {
+                    Text(
+                        text = countLabel,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.82f)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = recordingCount.toString(),
+                        style = MaterialTheme.typography.displaySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+                Spacer(modifier = Modifier.width(12.dp))
+                FilledTonalButton(onClick = onStartRecording) {
+                    Text("Record now")
                 }
             }
         }

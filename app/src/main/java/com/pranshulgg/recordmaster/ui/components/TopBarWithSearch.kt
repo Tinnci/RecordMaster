@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.pranshulgg.recordmaster.R
 import com.pranshulgg.recordmaster.ui.components.Symbol
 
@@ -112,9 +111,8 @@ fun TopBarWithSearch(
                 BasicTextField(
                     value = searchQuery,
                     onValueChange = onSearchChange,
-                    textStyle = TextStyle(
-                        color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 17.sp
+                    textStyle = MaterialTheme.typography.titleMedium.merge(
+                        TextStyle(color = MaterialTheme.colorScheme.onSurface)
                     ),
                     modifier = Modifier
                         .height(56.dp).fillMaxWidth(),
@@ -129,7 +127,7 @@ fun TopBarWithSearch(
                             if (searchQuery.isEmpty()) {
                                 Text(
                                     text = "Search...",
-                                    fontSize = 17.sp,
+                                    style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
@@ -144,7 +142,14 @@ fun TopBarWithSearch(
                     "folder" -> selectedFolderName ?: "Folder"
                     else -> "Recordings"
                 }
-                Text(if (isSelecting) "$selectedCount selected" else titleText, fontSize = 20.sp)
+                Text(
+                    text = if (isSelecting) "$selectedCount selected" else titleText,
+                    style = if (isSelecting) {
+                        MaterialTheme.typography.titleLarge
+                    } else {
+                        MaterialTheme.typography.headlineSmall
+                    }
+                )
             }
         },
         navigationIcon = {
