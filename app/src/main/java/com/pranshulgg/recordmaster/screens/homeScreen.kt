@@ -106,14 +106,8 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
     var selectedFolderKey by remember { mutableStateOf(0L) }
 
     val showMessage: suspend (String) -> Unit = { msg ->
-        if (snackbarHostState != null) {
-            snackbarHostState.currentSnackbarData?.dismiss()
-            snackbarHostState.showSnackbar(msg)
-        } else {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-            }
-        }
+        snackbarHostState.currentSnackbarData?.dismiss()
+        snackbarHostState.showSnackbar(msg)
     }
 
     val musicDir = remember {
@@ -164,8 +158,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
             context.startActivity(Intent.createChooser(intent, "Share audio"))
         } catch (e: Exception) {
             scope.launch {
-                if (snackbarHostState != null) snackbarHostState.showSnackbar("Failed to share files")
-                else Toast.makeText(context, "Failed to share files", Toast.LENGTH_SHORT).show()
+                snackbarHostState.showSnackbar("Failed to share files")
             }
         } finally {
             selectedPaths = emptySet()

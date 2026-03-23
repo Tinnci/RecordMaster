@@ -8,9 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,10 +23,8 @@ fun RecorderSearchBar(
     onExpandedChange: (Boolean) -> Unit,
     showMenu: () -> Unit,
 ) {
-    var internalExpanded = expanded
-
     val horizontalPadding by animateDpAsState(
-        targetValue = if (internalExpanded) 0.dp else 16.dp,
+        targetValue = if (expanded) 0.dp else 16.dp,
         animationSpec = tween(durationMillis = 300)
     )
 
@@ -38,25 +33,28 @@ fun RecorderSearchBar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(horizontal = horizontalPadding),
-            query = text,
-            onQueryChange = { onTextChange(it) },
-            onSearch = {
-                onSearch()
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = text,
+                    onQueryChange = onTextChange,
+                    onSearch = { onSearch() },
+                    expanded = expanded,
+                    onExpandedChange = onExpandedChange,
+                    placeholder = { Text("Search recordings..") },
+                    leadingIcon = {
+                        IconButton(onClick = showMenu) {
+                            Symbol(R.drawable.menu_24px, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = {}) {
+                            Symbol(R.drawable.settings_24px, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                )
             },
-            active = internalExpanded,
-            onActiveChange = {
-                internalExpanded = it
-                onExpandedChange(it)
-            },
-            placeholder = { Text("Search recordings..") },
-            leadingIcon = {
-                IconButton(
-                    onClick = showMenu,
-                ) { Symbol(R.drawable.menu_24px, color = MaterialTheme.colorScheme.onSurface) }
-            },
-            trailingIcon = {
-                IconButton(onClick = {}) { Symbol(R.drawable.settings_24px, color = MaterialTheme.colorScheme.onSurface) }
-            }
+            expanded = expanded,
+            onExpandedChange = onExpandedChange,
         ) {
             // suggestions/content slot - we keep empty because HomeScreen will render the expanded list itself
         }

@@ -499,7 +499,7 @@ private fun startRecording(
         mainTitle = "${namePrefix}_${String.format(Locale.getDefault(),"%03d", count)}"
 
 
-        val recorder = MediaRecorder().apply {
+        val recorder = createMediaRecorder(context).apply {
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -525,6 +525,15 @@ private fun startRecording(
         recorderRef.value = null
         outputFileRef.value = null
         callback(false)
+    }
+}
+
+private fun createMediaRecorder(context: Context): MediaRecorder {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        MediaRecorder(context)
+    } else {
+        @Suppress("DEPRECATION")
+        MediaRecorder()
     }
 }
 

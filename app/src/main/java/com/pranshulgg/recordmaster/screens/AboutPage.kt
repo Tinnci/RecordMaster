@@ -283,7 +283,7 @@ fun CheckForUpdateBtn(
                 val obj = arr.getJSONObject(i)
                 val prerelease = obj.optBoolean("prerelease", false)
                 if (!prerelease) {
-                    return@withContext obj.optString("tag_name", null)
+                    return@withContext obj.optString("tag_name").takeIf { it.isNotBlank() }
                 }
             }
             return@withContext null

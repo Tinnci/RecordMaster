@@ -464,8 +464,6 @@ suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray =
 
     val sampleList = ArrayList<Float>()
 
-    val inputBufs = decoder.inputBuffers
-    val outputBufs = decoder.outputBuffers
     val info = MediaCodec.BufferInfo()
 
     var sawInputEOS = false
@@ -475,7 +473,8 @@ suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray =
         if (!sawInputEOS) {
             val inIndex = decoder.dequeueInputBuffer(10_000)
             if (inIndex >= 0) {
-                val inputBuf = inputBufs[inIndex]
+                val inputBuf = decoder.getInputBuffer(inIndex)
+                    ?: throw IllegalStateException("Input buffer $inIndex unavailable")
                 val sampleSize = extractor.readSampleData(inputBuf, 0)
                 if (sampleSize < 0) {
                     decoder.queueInputBuffer(inIndex, 0, 0, 0L, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
@@ -491,7 +490,8 @@ suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray =
         val outIndex = decoder.dequeueOutputBuffer(info, 10_000)
         when {
             outIndex >= 0 -> {
-                val outBuf = outputBufs[outIndex]
+                val outBuf = decoder.getOutputBuffer(outIndex)
+                    ?: throw IllegalStateException("Output buffer $outIndex unavailable")
                 val chunk = ByteArray(info.size)
                 outBuf.get(chunk)
                 outBuf.clear()
@@ -511,8 +511,6 @@ suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray =
                 if ((info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
                     sawOutputEOS = true
                 }
-            }
-            outIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED -> {
             }
             outIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> {
             }
