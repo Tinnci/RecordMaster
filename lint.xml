@@ -4,6 +4,10 @@
         <ignore path="app/src/main/res/drawable/main_app_icon.png" />
     </issue>
 
+    <issue id="ComposeModifierMissing" severity="warning" />
+
+    <issue id="ComposeParameterOrder" severity="warning" />
+
     <issue id="UnusedResources">
         <ignore path="app/src/main/res/mipmap-hdpi/ic_launcher.webp" />
         <ignore path="app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" />

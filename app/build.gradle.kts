@@ -80,6 +80,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    lint {
+        enable += "ComposeM2Api"
+        error += "ComposeM2Api"
+    }
     kotlin {
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
@@ -139,4 +143,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.materialKolor)
     implementation(libs.markdown.compose)
+    lintChecks(libs.slack.compose.lint.checks)
 }
