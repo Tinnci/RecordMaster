@@ -72,6 +72,12 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavController) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
+    val currentVersion = remember(context) {
+        runCatching {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName?.let { "v$it" }
+        }.getOrNull() ?: "v1.0.0"
+    }
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
@@ -107,7 +113,7 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                                 color = MaterialTheme.colorScheme.secondary
                             )
                             CheckForUpdateBtn(
-                                currentVersion = "v1.1.0",
+                                currentVersion = currentVersion,
                                 githubRepo = "Tinnci/RecordMaster",
                                 snackbarHostState = snackbarHostState
                             )
