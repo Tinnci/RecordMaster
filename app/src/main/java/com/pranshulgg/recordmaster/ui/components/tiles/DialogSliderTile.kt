@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +35,6 @@ import androidx.compose.ui.window.Popup
 import com.pranshulgg.recordmaster.ui.components.Symbol
 import java.time.temporal.TemporalQueries.offset
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun DialogSliderTile(
     headline: String,
@@ -124,7 +122,6 @@ fun DialogSliderTile(
 }
 
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LabeledSlider(
     value: Float,

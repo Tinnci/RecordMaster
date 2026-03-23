@@ -19,11 +19,9 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -67,7 +65,6 @@ import com.pranshulgg.recordmaster.ui.theme.RecordMasterTheme
 import com.pranshulgg.recordmaster.utils.NavTransitions
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3ExpressiveApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         PreferencesHelper.init(this)
         super.onCreate(savedInstanceState)
@@ -77,7 +74,7 @@ class MainActivity : ComponentActivity() {
             val scope = rememberCoroutineScope()
 
             val navController = rememberNavController()
-            val currentMotionScheme = motionScheme
+            val currentMotionScheme = MaterialTheme.motionScheme
             val motionScheme = remember(currentMotionScheme) { currentMotionScheme }
 
             LaunchedEffect(Unit) {

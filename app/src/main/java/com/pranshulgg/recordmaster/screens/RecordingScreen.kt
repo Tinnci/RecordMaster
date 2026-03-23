@@ -60,7 +60,7 @@ import com.pranshulgg.recordmaster.ui.components.ConfirmDialog
 
 var mainTitle = "Record"
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class,
+@OptIn(ExperimentalMaterial3Api::class,
     ExperimentalAnimationApi::class
 )
 @Composable

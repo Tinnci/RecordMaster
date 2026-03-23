@@ -55,7 +55,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.system.measureNanoTime
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: NavController) {
     val context = LocalContext.current

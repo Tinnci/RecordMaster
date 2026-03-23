@@ -25,11 +25,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MaterialTheme.motionScheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -75,7 +73,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostState){
     val context = LocalContext.current
@@ -274,11 +272,11 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     visible =  currentTab == "home" && !showSearch,
                     enter = scaleIn(
                         initialScale = 0.8f,
-                        animationSpec = motionScheme.defaultSpatialSpec()
+                        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()
                     ) + fadeIn(),
                     exit = scaleOut(
                         targetScale = 0.8f,
-                        animationSpec = motionScheme.defaultSpatialSpec()
+                        animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()
                     ) + fadeOut(),
                 ) {
                     FloatingActionButton(
