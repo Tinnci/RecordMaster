@@ -44,6 +44,51 @@
 
 For any questions or feedback, feel free to open an issue on GitHub or contact pranshul.devmain@gmail.com
 
+# Build
+
+Local CI-equivalent verification:
+
+```bash
+./gradlew ktlintCheck test assembleDebug
+```
+
+# Release Signing
+
+Release signing is optional and is only enabled when all four values are provided:
+
+```text
+RELEASE_STORE_FILE
+RELEASE_STORE_PASSWORD
+RELEASE_KEY_ALIAS
+RELEASE_KEY_PASSWORD
+```
+
+The app module reads these values from either Gradle properties or environment variables, so the same setup works both locally and in GitHub Actions.
+
+Local macOS setup idea:
+
+```bash
+export RELEASE_STORE_FILE="$HOME/Library/Mobile Documents/com~apple~CloudDocs/Android/RecordMaster/release.jks"
+export RELEASE_STORE_PASSWORD="..."
+export RELEASE_KEY_ALIAS="..."
+export RELEASE_KEY_PASSWORD="..."
+./gradlew assembleRelease
+```
+
+Recommended GitHub Secrets layout:
+
+```text
+RELEASE_KEYSTORE_BASE64
+RELEASE_STORE_PASSWORD
+RELEASE_KEY_ALIAS
+RELEASE_KEY_PASSWORD
+```
+
+In GitHub Actions, decode `RELEASE_KEYSTORE_BASE64` into a temporary keystore file, then expose its path as `RELEASE_STORE_FILE` for the Gradle build.
+
+The repository also includes a tag-triggered release workflow at `.github/workflows/release.yml`.
+Pushing a tag such as `v1.0.1` will build a signed release APK, upload it as a workflow artifact, and attach it to the matching GitHub Release.
+
 # ©️ License
 
 This project is licensed under the GPL-3.0 license. See the `LICENSE` file for details.

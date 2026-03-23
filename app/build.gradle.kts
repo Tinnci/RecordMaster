@@ -4,6 +4,22 @@ plugins {
     alias(libs.plugins.ktlint)
 }
 
+val releaseStoreFilePath = providers.gradleProperty("RELEASE_STORE_FILE")
+    .orElse(providers.environmentVariable("RELEASE_STORE_FILE"))
+val releaseStorePassword = providers.gradleProperty("RELEASE_STORE_PASSWORD")
+    .orElse(providers.environmentVariable("RELEASE_STORE_PASSWORD"))
+val releaseKeyAlias = providers.gradleProperty("RELEASE_KEY_ALIAS")
+    .orElse(providers.environmentVariable("RELEASE_KEY_ALIAS"))
+val releaseKeyPassword = providers.gradleProperty("RELEASE_KEY_PASSWORD")
+    .orElse(providers.environmentVariable("RELEASE_KEY_PASSWORD"))
+
+val hasReleaseSigning = listOf(
+    releaseStoreFilePath.orNull,
+    releaseStorePassword.orNull,
+    releaseKeyAlias.orNull,
+    releaseKeyPassword.orNull
+).all { !it.isNullOrBlank() }
+
 ktlint {
     version.set("1.5.0")
     android.set(true)
@@ -18,6 +34,17 @@ android {
     namespace = "com.pranshulgg.recordmaster"
     compileSdk = 36
 
+    signingConfigs {
+        if (hasReleaseSigning) {
+            create("release") {
+                storeFile = file(requireNotNull(releaseStoreFilePath.orNull))
+                storePassword = requireNotNull(releaseStorePassword.orNull)
+                keyAlias = requireNotNull(releaseKeyAlias.orNull)
+                keyPassword = requireNotNull(releaseKeyPassword.orNull)
+            }
+        }
+    }
+
     defaultConfig {
         applicationId = "com.pranshulgg.recordmaster"
         minSdk = 24
@@ -31,6 +58,9 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            if (hasReleaseSigning) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
