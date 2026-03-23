@@ -12,6 +12,15 @@ val releaseKeyAlias = providers.gradleProperty("RELEASE_KEY_ALIAS")
     .orElse(providers.environmentVariable("RELEASE_KEY_ALIAS"))
 val releaseKeyPassword = providers.gradleProperty("RELEASE_KEY_PASSWORD")
     .orElse(providers.environmentVariable("RELEASE_KEY_PASSWORD"))
+val releaseVersionNameOverride = providers.gradleProperty("RELEASE_VERSION_NAME")
+    .orElse(providers.environmentVariable("RELEASE_VERSION_NAME"))
+val releaseVersionCodeOverride = providers.gradleProperty("RELEASE_VERSION_CODE")
+    .orElse(providers.environmentVariable("RELEASE_VERSION_CODE"))
+
+val defaultVersionCode = 2
+val defaultVersionName = "1.0.0"
+val resolvedVersionName = releaseVersionNameOverride.orNull ?: defaultVersionName
+val resolvedVersionCode = releaseVersionCodeOverride.orNull?.toIntOrNull() ?: defaultVersionCode
 
 val hasReleaseSigning = listOf(
     releaseStoreFilePath.orNull,
@@ -49,8 +58,8 @@ android {
         applicationId = "com.pranshulgg.recordmaster"
         minSdk = 24
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.0.0"
+        versionCode = resolvedVersionCode
+        versionName = resolvedVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

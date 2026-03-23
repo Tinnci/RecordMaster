@@ -90,15 +90,22 @@ In GitHub Actions, decode `RELEASE_KEYSTORE_BASE64` into a temporary keystore fi
 The repository also includes a tag-triggered release workflow at `.github/workflows/release.yml`.
 Existing tags include `v1.0.0` and `v1.0.0-beta.1`, so the next stable tag should start from `v1.0.1` or later.
 Pushing a tag such as `v1.0.1` will build a signed release APK, upload it as a workflow artifact, and attach it to the matching GitHub Release on `Tinnci/RecordMaster`.
+For tag-triggered release builds, the workflow also derives:
+
+```text
+RELEASE_VERSION_NAME=1.0.1
+RELEASE_VERSION_CODE=10001
+```
+
+That means the published APK version now follows the tag automatically, as long as the tag format is `vMAJOR.MINOR.PATCH`.
 
 First release tag checklist:
 
 ```bash
-# 1. update app/build.gradle.kts versionCode/versionName if needed
-# 2. push the current branch to origin/master
+# 1. push the current branch to origin/master
 git push origin master
 
-# 3. create the first fork release tag
+# 2. create the first fork release tag
 git tag -a v1.0.1 -m "RecordMaster fork release v1.0.1"
 git push origin v1.0.1
 ```
