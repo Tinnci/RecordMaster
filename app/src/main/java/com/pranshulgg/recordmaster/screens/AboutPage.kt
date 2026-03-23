@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.core.net.toUri
 import com.pranshulgg.recordmaster.R
 import com.pranshulgg.recordmaster.ui.components.Symbol
 import com.pranshulgg.recordmaster.utils.bottomPadding
@@ -260,7 +261,7 @@ fun CheckForUpdateBtn(
 
     fun openReleasesPage() {
         val url = "https://github.com/$githubRepo/releases"
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         ctx.startActivity(intent)
@@ -422,7 +423,7 @@ If you have any questions about these Terms & Conditions, please contact:
                     markdown = markdownData,
                     linkColor = MaterialTheme.colorScheme.tertiary,
                     onLinkClicked = { url ->
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                         context.startActivity(intent)
                     }
                 )
@@ -500,7 +501,7 @@ If you have any questions about privacy while using RecordMaster, please contact
                     markdown = markdownData,
                     linkColor = MaterialTheme.colorScheme.tertiary,
                     onLinkClicked = { url ->
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                         context.startActivity(intent)
                     }
                 )
