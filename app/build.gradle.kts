@@ -39,6 +39,25 @@ ktlint {
     }
 }
 
+configurations.configureEach {
+    resolutionStrategy.force(
+        "androidx.compose.runtime:runtime:1.11.0-alpha06",
+        "androidx.compose.ui:ui:1.11.0-alpha06",
+        "androidx.compose.ui:ui-geometry:1.11.0-alpha06",
+        "androidx.compose.ui:ui-graphics:1.11.0-alpha06",
+        "androidx.compose.ui:ui-text:1.11.0-alpha06",
+        "androidx.compose.ui:ui-tooling:1.11.0-alpha06",
+        "androidx.compose.ui:ui-tooling-data:1.11.0-alpha06",
+        "androidx.compose.ui:ui-tooling-preview:1.11.0-alpha06",
+        "androidx.compose.ui:ui-unit:1.11.0-alpha06",
+        "androidx.compose.ui:ui-util:1.11.0-alpha06",
+        "androidx.compose.foundation:foundation:1.11.0-alpha06",
+        "androidx.compose.foundation:foundation-layout:1.11.0-alpha06",
+        "androidx.compose.animation:animation:1.11.0-alpha06",
+        "androidx.compose.animation:animation-core:1.11.0-alpha06"
+    )
+}
+
 android {
     namespace = "com.pranshulgg.recordmaster"
     compileSdk = 36
