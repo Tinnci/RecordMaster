@@ -12,13 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Symbol(
-    icon: Int,
-    desc: String? = null,
-    color: Color = Color.Unspecified,
-    size: Dp = 24.dp,
-    paddingStart: Dp = 0.dp
-) {
+fun Symbol(icon: Int, desc: String? = null, color: Color = Color.Unspecified, size: Dp = 24.dp, paddingStart: Dp = 0.dp) {
     Box(modifier = Modifier.padding(start = paddingStart)) {
         Icon(
             painter = painterResource(icon),

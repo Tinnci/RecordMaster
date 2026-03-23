@@ -36,8 +36,7 @@ object PreferencesHelper {
         prefs.edit { putBoolean(key, value) }
     }
 
-    fun getBool(key: String): Boolean? =
-        if (prefs.contains(key)) prefs.getBoolean(key, false) else null
+    fun getBool(key: String): Boolean? = if (prefs.contains(key)) prefs.getBoolean(key, false) else null
 
     // -------------------- Int --------------------
 
@@ -45,8 +44,7 @@ object PreferencesHelper {
         prefs.edit { putInt(key, value) }
     }
 
-    fun getInt(key: String): Int? =
-        if (prefs.contains(key)) prefs.getInt(key, 0) else null
+    fun getInt(key: String): Int? = if (prefs.contains(key)) prefs.getInt(key, 0) else null
 
     // -------------------- Double --------------------
 
@@ -65,8 +63,7 @@ object PreferencesHelper {
         prefs.edit { putStringSet(key, value.toSet()) }
     }
 
-    fun getStringList(key: String): List<String>? =
-        prefs.getStringSet(key, null)?.toList()
+    fun getStringList(key: String): List<String>? = prefs.getStringSet(key, null)?.toList()
 
     // -------------------- JSON (Map) --------------------
 

@@ -4,25 +4,17 @@ import android.app.AlertDialog
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ListItem
@@ -43,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -63,7 +54,7 @@ fun <T> DialogOptionTile(
     Surface(
         modifier = Modifier.fillMaxWidth(),
 
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
 
@@ -75,14 +66,17 @@ fun <T> DialogOptionTile(
             leadingContent = leading,
             headlineContent = { Text(headline) },
             supportingContent = {
-                if (description != null) Text(description)
-                else selectedOption?.let {
-                    Text(
-                        optionLabel(it),
-                        color = MaterialTheme.colorScheme.tertiary
-                    )
+                if (description != null) {
+                    Text(description)
+                } else {
+                    selectedOption?.let {
+                        Text(
+                            optionLabel(it),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
                 }
-            },
+            }
         )
     }
 
@@ -159,9 +153,9 @@ fun <T> DialogOptionTile(
                     onClick = {
                         tempSelection?.let { onOptionSelected(it) }
                         showDialog = false
-                    }, shapes = ButtonDefaults.shapes()
+                    },
+                    shapes = ButtonDefaults.shapes()
                 ) {
-
                     Text("Save", fontWeight = FontWeight.W600, fontSize = 16.sp)
                 }
             },

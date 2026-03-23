@@ -20,14 +20,14 @@ fun DialogTextFieldTile(
     leading: @Composable (() -> Unit)? = null,
     placeholder: String,
     placeholderTextField: String,
-    shapes: RoundedCornerShape,
+    shapes: RoundedCornerShape
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var textFieldValue by remember { mutableStateOf(initialText) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
             modifier = Modifier.clickable { showDialog = true },
@@ -37,17 +37,20 @@ fun DialogTextFieldTile(
             leadingContent = leading,
             headlineContent = { Text(headline) },
             supportingContent = {
-                if (description != null) Text(description)
-                else if (textFieldValue.isNotEmpty()) Text(
-                    textFieldValue,
-                    color = MaterialTheme.colorScheme.tertiary
-                ) else {
+                if (description != null) {
+                    Text(description)
+                } else if (textFieldValue.isNotEmpty()) {
+                    Text(
+                        textFieldValue,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                } else {
                     Text(
                         placeholder,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-            },
+            }
         )
     }
 
@@ -62,7 +65,7 @@ fun DialogTextFieldTile(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp),
-                    placeholder = { Text(placeholderTextField) },
+                    placeholder = { Text(placeholderTextField) }
                 )
             },
             confirmButton = {

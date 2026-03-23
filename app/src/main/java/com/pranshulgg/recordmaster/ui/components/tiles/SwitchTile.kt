@@ -29,7 +29,7 @@ fun SwitchTile(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
 
@@ -63,7 +63,6 @@ fun SwitchTile(
                                 size = SwitchDefaults.IconSize,
                                 color = MaterialTheme.colorScheme.primary
                             )
-
                         }
                     } else {
                         {
@@ -72,16 +71,13 @@ fun SwitchTile(
                                 size = SwitchDefaults.IconSize,
                                 color = MaterialTheme.colorScheme.surfaceContainerHighest
                             )
-
                         }
                     }
                 )
             }
         )
     }
-
 }
-
 
 @Composable
 fun SingleSwitchTile(
@@ -92,10 +88,9 @@ fun SingleSwitchTile(
     leading: @Composable (() -> Unit)? = null,
     switchEnabled: Boolean = true
 ) {
-
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(50.dp),
+        shape = RoundedCornerShape(50.dp)
     ) {
         ListItem(
 
@@ -128,7 +123,6 @@ fun SingleSwitchTile(
                                 size = SwitchDefaults.IconSize,
                                 color = MaterialTheme.colorScheme.primary
                             )
-
                         }
                     } else {
                         {
@@ -137,12 +131,10 @@ fun SingleSwitchTile(
                                 size = SwitchDefaults.IconSize,
                                 color = MaterialTheme.colorScheme.surfaceContainerHighest
                             )
-
                         }
                     }
                 )
             }
         )
     }
-
 }

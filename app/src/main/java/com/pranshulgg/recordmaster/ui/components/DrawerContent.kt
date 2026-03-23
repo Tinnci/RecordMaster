@@ -42,8 +42,7 @@ fun DrawerContent(
     foldersExpanded: Boolean,
     navController: NavController,
     closeDrawer: () -> Unit
-    ) {
-
+) {
     val folders = remember(rootDirKey) {
         (musicDir.listFiles() ?: emptyArray())
             .filter { it.isDirectory && it.name != "garbage" }
@@ -54,119 +53,132 @@ fun DrawerContent(
         modifier = Modifier.width(280.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            item {
-        Text(
-            "RecordMaster",
-            modifier = Modifier.padding(16.dp, bottom = 0.dp, end = 16.dp, top = 16.dp),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item {
+                    Text(
+                        "RecordMaster",
+                        modifier = Modifier.padding(16.dp, bottom = 0.dp, end = 16.dp, top = 16.dp),
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
 
-        Column(Modifier.padding(14.dp)) {
-            NavigationDrawerItem(
-                label = { Text("Recordings") },
-                selected = currentTab == "home",
-                icon = {
-                    if (currentTab == "home")
-                        Symbol(R.drawable.home_24px, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                    else
-                        Symbol(R.drawable.home_outlined_24px, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                },
-                onClick = {
-                    onSelectTab("home", null)
-                }
-            )
+                    Column(Modifier.padding(14.dp)) {
+                        NavigationDrawerItem(
+                            label = { Text("Recordings") },
+                            selected = currentTab == "home",
+                            icon = {
+                                if (currentTab == "home") {
+                                    Symbol(R.drawable.home_24px, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                } else {
+                                    Symbol(
+                                        R.drawable.home_outlined_24px,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            },
+                            onClick = {
+                                onSelectTab("home", null)
+                            }
+                        )
 
-            NavigationDrawerItem(
-                label = { Text("Recently deleted") },
-                selected = currentTab == "garbage",
-                icon = {
-                    if (currentTab == "garbage")
-                        Symbol(R.drawable.folder_delete_24px, color = MaterialTheme.colorScheme.onSecondaryContainer)
-                    else
-                        Symbol(R.drawable.folder_delete_outlined_24px, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                },
-                onClick = {
-                    onSelectTab("garbage", null)
-                }
-            )
+                        NavigationDrawerItem(
+                            label = { Text("Recently deleted") },
+                            selected = currentTab == "garbage",
+                            icon = {
+                                if (currentTab == "garbage") {
+                                    Symbol(
+                                        R.drawable.folder_delete_24px,
+                                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                                    )
+                                } else {
+                                    Symbol(
+                                        R.drawable.folder_delete_outlined_24px,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            },
+                            onClick = {
+                                onSelectTab("garbage", null)
+                            }
+                        )
 
-
-            NavigationDrawerItem(
-                label = { Text("Settings") },
-                selected = false,
-                icon = {
-                        Symbol(R.drawable.settings_outlined_24px, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                },
-                onClick = {
-                    navController.navigate("OpenSettings")
-                    closeDrawer()
-                }
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-
-            if(folders.isNotEmpty()) {
-                Text(
-                    "Folders", fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.W700
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-                val context = LocalContext.current
-                val musicDir = remember {
-                    context.getExternalFilesDir(Environment.DIRECTORY_MUSIC) ?: context.filesDir
-                }
-
-
-                folders.forEach { dir ->
-                    val recordingsCount = dir.listFiles()?.count { it.isFile } ?: 0
-                    NavigationDrawerItem(
-                        label = { Text(dir.name) },
-                        selected = currentTab == "folder" && selectedFolderName == dir.name,
-                        icon = {
-                            if(currentTab == "folder" && selectedFolderName == dir.name){
+                        NavigationDrawerItem(
+                            label = { Text("Settings") },
+                            selected = false,
+                            icon = {
                                 Symbol(
-                                    R.drawable.folder_24px,
-                                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                                )
-                            } else{
-                                Symbol(
-                                    R.drawable.folder_outlined_24px,
+                                    R.drawable.settings_outlined_24px,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                            },
+                            onClick = {
+                                navController.navigate("OpenSettings")
+                                closeDrawer()
                             }
+                        )
 
-                        },
-                        badge = {
-                                Text(recordingsCount.toString(), fontSize = 15.sp, color = MaterialTheme.colorScheme.secondary)
-                        },
-                        onClick = { onSelectTab("folder", dir.name) }
-                    )
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        if (folders.isNotEmpty()) {
+                            Text(
+                                "Folders",
+                                fontSize = 16.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.W700
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        val context = LocalContext.current
+                        val musicDir = remember {
+                            context.getExternalFilesDir(Environment.DIRECTORY_MUSIC) ?: context.filesDir
+                        }
+
+                        folders.forEach { dir ->
+                            val recordingsCount = dir.listFiles()?.count { it.isFile } ?: 0
+                            NavigationDrawerItem(
+                                label = { Text(dir.name) },
+                                selected = currentTab == "folder" && selectedFolderName == dir.name,
+                                icon = {
+                                    if (currentTab == "folder" && selectedFolderName == dir.name) {
+                                        Symbol(
+                                            R.drawable.folder_24px,
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                                        )
+                                    } else {
+                                        Symbol(
+                                            R.drawable.folder_outlined_24px,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                },
+                                badge = {
+                                    Text(
+                                        recordingsCount.toString(),
+                                        fontSize = 15.sp,
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
+                                },
+                                onClick = { onSelectTab("folder", dir.name) }
+                            )
+                        }
+                        Spacer(Modifier.height(80.dp))
+                    }
                 }
-            Spacer(Modifier.height(80.dp))
+            }
 
+            FloatingActionButton(
+                onClick = { onRequestCreateFolder() },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Symbol(R.drawable.create_new_folder_24px, color = MaterialTheme.colorScheme.onPrimaryContainer)
+            }
         }
     }
-    }
-
-        FloatingActionButton(
-            onClick = { onRequestCreateFolder() },
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        ) {
-            Symbol(R.drawable.create_new_folder_24px, color = MaterialTheme.colorScheme.onPrimaryContainer)
-        }
-    }
-    }
-
 }

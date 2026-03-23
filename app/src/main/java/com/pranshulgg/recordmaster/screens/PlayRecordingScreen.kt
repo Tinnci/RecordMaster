@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -40,21 +39,19 @@ import androidx.navigation.NavController
 import com.pranshulgg.recordmaster.R
 import com.pranshulgg.recordmaster.ui.components.DropdownMenu
 import com.pranshulgg.recordmaster.ui.components.Symbol
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
-import kotlin.system.measureNanoTime
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -117,75 +114,77 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
 
     DisposableEffect(Unit) {
         onDispose {
-            try { player.value?.stop() } catch (_: Exception) {}
-            try { player.value?.release() } catch (_: Exception) {}
+            try {
+                player.value?.stop()
+            } catch (_: Exception) {}
+            try {
+                player.value?.release()
+            } catch (_: Exception) {}
             player.value = null
         }
     }
 
-
-
     Scaffold(
-        topBar = { TopAppBar(
-            navigationIcon = {
-                IconButton(
-                    onClick = {onDone()}
-                ) {
-                    Symbol(R.drawable.arrow_back_24px, color = MaterialTheme.colorScheme.onSurface)
-                }
-            },
-            title = { Text(file.nameWithoutExtension) },
-            subtitle = {Text("$date at $time")},
-            actions = {
-                DropdownMenu(
-                    navController,
-                    onDelete = {
-                        coroutineScope.launch {
+        topBar = {
+            TopAppBar(
+                navigationIcon = {
+                    IconButton(
+                        onClick = { onDone() }
+                    ) {
+                        Symbol(R.drawable.arrow_back_24px, color = MaterialTheme.colorScheme.onSurface)
+                    }
+                },
+                title = { Text(file.nameWithoutExtension) },
+                subtitle = { Text("$date at $time") },
+                actions = {
+                    DropdownMenu(
+                        navController,
+                        onDelete = {
+                            coroutineScope.launch {
+                                try {
+                                    try {
+                                        player.value?.stop()
+                                    } catch (_: Exception) {
+                                    }
+                                    try {
+                                        player.value?.release()
+                                    } catch (_: Exception) {
+                                    }
+                                    player.value = null
+
+                                    val ok = file.delete()
+                                    if (ok) {
+                                        onDone()
+                                    } else {
+                                        snackbarHostState.showSnackbar("Delete failed")
+                                    }
+                                } catch (e: Exception) {
+                                    snackbarHostState.showSnackbar("Delete error: ${e.message}")
+                                }
+                            }
+                        },
+                        onShare = {
                             try {
-                                try {
-                                    player.value?.stop()
+                                val uri: Uri = try {
+                                    FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
                                 } catch (_: Exception) {
+                                    Uri.fromFile(file)
                                 }
-                                try {
-                                    player.value?.release()
-                                } catch (_: Exception) {
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "audio/*"
+                                    putExtra(Intent.EXTRA_STREAM, uri)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 }
-                                player.value = null
-
-                                val ok = file.delete()
-                                if (ok) {
-                                    onDone()
-                                } else {
-                                    snackbarHostState.showSnackbar("Delete failed")
-                                }
+                                val chooser = Intent.createChooser(shareIntent, "Share audio")
+                                context.startActivity(chooser)
                             } catch (e: Exception) {
-                                snackbarHostState.showSnackbar("Delete error: ${e.message}")
                             }
-                        }
-                    },
-                    onShare = {
-                        try {
-                            val uri: Uri = try {
-                                FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-                            } catch (_: Exception) {
-                                Uri.fromFile(file)
-                            }
-                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "audio/*"
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            }
-                            val chooser = Intent.createChooser(shareIntent, "Share audio")
-                            context.startActivity(chooser)
-                        } catch (e: Exception) {
-
-                        }
-                    },
-                    file = file
-                )
-            }
-        )
-         },
+                        },
+                        file = file
+                    )
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { padding ->
         Column(
@@ -196,27 +195,27 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-
             val displayBarCount = min(staticAmpsState.value?.size ?: requestedBarCount, maxVisibleBars)
 
             var uiProgress by remember { mutableFloatStateOf(0f) }
             var isUserSeeking by remember { mutableStateOf(false) }
 
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(MaterialTheme.colorScheme.surfaceContainer),
-                    contentAlignment = Alignment.Center
-                ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                contentAlignment = Alignment.Center
+            ) {
                 WaveformBars(
                     audioSessionId = if (staticAmpsState.value == null) player.value?.audioSessionId ?: 0 else 0,
                     progress = if (!isUserSeeking && duration > 0) currentPos / duration.toFloat() else uiProgress,
                     onSeek = { frac ->
                         val target = (frac * duration).toInt().coerceIn(0, duration)
-                        try { player.value?.seekTo(target) } catch (_: Exception) {}
+                        try {
+                            player.value?.seekTo(target)
+                        } catch (_: Exception) {}
                         currentPos = target
                         uiProgress = frac.coerceIn(0f, 1f)
                     },
@@ -231,7 +230,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                 if (isComputing) {
                     Surface(
                         color = MaterialTheme.colorScheme.surfaceContainer,
-                        modifier = Modifier.matchParentSize(),
+                        modifier = Modifier.matchParentSize()
                     ) {
                         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                             LoadingIndicator()
@@ -245,59 +244,59 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
             Column(
                 Modifier.padding(end = 5.dp, start = 5.dp)
             ) {
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    val fracFromPlayer = if (duration > 0) currentPos / duration.toFloat() else 0f
+                    LaunchedEffect(fracFromPlayer, isUserSeeking) {
+                        if (!isUserSeeking) uiProgress = fracFromPlayer.coerceIn(0f, 1f)
+                    }
 
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                val fracFromPlayer = if (duration > 0) currentPos / duration.toFloat() else 0f
-                LaunchedEffect(fracFromPlayer, isUserSeeking) {
-                    if (!isUserSeeking) uiProgress = fracFromPlayer.coerceIn(0f, 1f)
+                    Slider(
+                        value = uiProgress.coerceIn(0f, 1f),
+                        onValueChange = { new ->
+                            isUserSeeking = true
+                            uiProgress = new.coerceIn(0f, 1f)
+                        },
+                        track = { sliderState ->
+                            SliderDefaults.Track(
+                                sliderState = sliderState,
+                                modifier = Modifier.height(5.dp)
+                            )
+                        },
+                        thumb = {
+                            SliderDefaults.Thumb(
+                                interactionSource,
+                                modifier = Modifier.width(5.dp).height(18.dp)
+                            )
+                        },
+                        onValueChangeFinished = {
+                            isUserSeeking = false
+                            val target = (uiProgress * duration).toInt().coerceIn(0, duration)
+                            try {
+                                player.value?.seekTo(target)
+                            } catch (_: Exception) {}
+                            currentPos = target
+                        },
+                        modifier = Modifier.fillMaxWidth().height(26.dp)
+                    )
                 }
 
-                Slider(
-                    value = uiProgress.coerceIn(0f, 1f),
-                    onValueChange = { new ->
-                        isUserSeeking = true
-                        uiProgress = new.coerceIn(0f, 1f)
-                    },
-                    track = { sliderState ->
-                        SliderDefaults.Track(
-                            sliderState = sliderState,
-                            modifier = Modifier.height(5.dp)
-                        )
-                    },
-                    thumb = {
-                        SliderDefaults.Thumb(
-                            interactionSource,
-                            modifier = Modifier.width(5.dp).height(18.dp)
-                        )
-
-                    },
-                    onValueChangeFinished = {
-                        isUserSeeking = false
-                        val target = (uiProgress * duration).toInt().coerceIn(0, duration)
-                        try { player.value?.seekTo(target) } catch (_: Exception) {}
-                        currentPos = target
-                    },
-                    modifier = Modifier.fillMaxWidth().height(26.dp)
-                )
-            }
-
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(formatMs(currentPos), color = MaterialTheme.colorScheme.onSurface)
-                Text(formatMs(duration), color = MaterialTheme.colorScheme.onSurface)
-            }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(formatMs(currentPos), color = MaterialTheme.colorScheme.onSurface)
+                    Text(formatMs(duration), color = MaterialTheme.colorScheme.onSurface)
+                }
             }
             Spacer(modifier = Modifier.height(18.dp))
 
             val interactionSources = remember { List(3) { MutableInteractionSource() } }
 
-
             ButtonGroup(
 
                 overflowIndicator = { menuState ->
                     FilledIconButton(
-                        onClick = {}) {} }
+                        onClick = {}
+                    ) {}
+                }
             ) {
-
                 customItem(
                     {
                         Button(
@@ -307,11 +306,10 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                                 .width(76.dp)
                                 .animateWidth(interactionSources[0]),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                             ),
                             shapes = ButtonDefaults.shapes(),
                             onClick = {
-
                             }
 
                         ) {
@@ -319,10 +317,8 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                         }
                     },
                     { state ->
-
                     }
                 )
-
 
                 customItem(
                     {
@@ -357,7 +353,9 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                                                 }
                                                 setOnErrorListener { _, what, extra ->
                                                     coroutineScope.launch {
-                                                        snackbarHostState.showSnackbar("Playback error: what=$what extra=$extra")
+                                                        snackbarHostState.showSnackbar(
+                                                            "Playback error: what=$what extra=$extra"
+                                                        )
                                                     }
                                                     true
                                                 }
@@ -378,22 +376,37 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                                         isPlaying = true
                                     }
                                 }
-
                             }
 
                         ) {
                             val size = ButtonDefaults.ExtraLargeContainerHeight
-                            if (isPlaying) Symbol(R.drawable.pause_24px, color = MaterialTheme.colorScheme.onErrorContainer, size = 28.dp)
-                            else Symbol(R.drawable.play_arrow_24px, color = MaterialTheme.colorScheme.onPrimaryContainer, size = 28.dp)
+                            if (isPlaying) {
+                                Symbol(
+                                    R.drawable.pause_24px,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    size = 28.dp
+                                )
+                            } else {
+                                Symbol(
+                                    R.drawable.play_arrow_24px,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    size = 28.dp
+                                )
+                            }
                             Spacer(Modifier.width(8.dp))
-                            Text(if (isPlaying) "Pause" else "Play",
-                                color = if (isPlaying) MaterialTheme.colorScheme.onErrorContainer
-                                else MaterialTheme.colorScheme.onPrimaryContainer, fontSize = 24.sp)
+                            Text(
+                                if (isPlaying) "Pause" else "Play",
+                                color = if (isPlaying) {
+                                    MaterialTheme.colorScheme.onErrorContainer
+                                } else {
+                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                },
+                                fontSize = 24.sp
+                            )
                         }
                     },
                     { state -> }
                 )
-
 
                 customItem(
                     {
@@ -404,7 +417,7 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                                 .width(76.dp)
                                 .animateWidth(interactionSources[2]),
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHighest
                             ),
                             shapes = ButtonDefaults.shapes(),
                             onClick = {
@@ -412,22 +425,19 @@ fun PlayRecordingScreen(filePath: String, onDone: () -> Unit, navController: Nav
                             }
 
                         ) {
-
-                            Symbol(R.drawable.forward_10_24px, size = 28.dp, color = MaterialTheme.colorScheme.onSurface)
-
-
+                            Symbol(
+                                R.drawable.forward_10_24px,
+                                size = 28.dp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     },
                     { state ->
-
                     }
                 )
-
             }
 
-
             Spacer(modifier = Modifier.height(24.dp))
-
         }
     }
 }
@@ -555,6 +565,7 @@ suspend fun computePeaksFromAudioFile(path: String, barCount: Int): FloatArray =
 
     return@withContext peaks
 }
+
 @Composable
 private fun WaveformBars(
     audioSessionId: Int,
@@ -579,17 +590,22 @@ private fun WaveformBars(
                         setCaptureSize(range[1])
                     } catch (_: Exception) {}
                     var lastCaptureNs = 0L
-                    setDataCaptureListener(object : Visualizer.OnDataCaptureListener {
-                        override fun onWaveFormDataCapture(v: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
-                            if (waveform == null) return
-                            val now = System.nanoTime()
-                            val elapsedNs = now - lastCaptureNs
-                            if (elapsedNs < 28_000_000L) return
-                            lastCaptureNs = now
-                            waveformRaw.value = waveform.copyOf()
-                        }
-                        override fun onFftDataCapture(v: Visualizer?, fft: ByteArray?, samplingRate: Int) {}
-                    }, Visualizer.getMaxCaptureRate() / 4, true, false)
+                    setDataCaptureListener(
+                        object : Visualizer.OnDataCaptureListener {
+                            override fun onWaveFormDataCapture(v: Visualizer?, waveform: ByteArray?, samplingRate: Int) {
+                                if (waveform == null) return
+                                val now = System.nanoTime()
+                                val elapsedNs = now - lastCaptureNs
+                                if (elapsedNs < 28_000_000L) return
+                                lastCaptureNs = now
+                                waveformRaw.value = waveform.copyOf()
+                            }
+                            override fun onFftDataCapture(v: Visualizer?, fft: ByteArray?, samplingRate: Int) {}
+                        },
+                        Visualizer.getMaxCaptureRate() / 4,
+                        true,
+                        false
+                    )
                     enabled = true
                 }
             } catch (e: Exception) {
@@ -600,8 +616,12 @@ private fun WaveformBars(
         }
 
         onDispose {
-            try { visualizer?.enabled = false } catch (_: Exception) {}
-            try { visualizer?.release() } catch (_: Exception) {}
+            try {
+                visualizer?.enabled = false
+            } catch (_: Exception) {}
+            try {
+                visualizer?.release()
+            } catch (_: Exception) {}
             waveformRaw.value = null
         }
     }
@@ -617,9 +637,11 @@ private fun WaveformBars(
                 for (i in 0 until barCount) {
                     val start = (i * staticAmps.size) / barCount
                     val end = ((i + 1) * staticAmps.size) / barCount
-                    var sum = 0f; var c = 0
+                    var sum = 0f
+                    var c = 0
                     for (j in start until end.coerceAtLeast(start + 1).coerceAtMost(staticAmps.size)) {
-                        sum += staticAmps[j]; c++
+                        sum += staticAmps[j]
+                        c++
                     }
                     targetAmps[i] = if (c > 0) (sum / c) else 0f
                 }
@@ -704,7 +726,6 @@ private fun WaveformBars(
     val barWidthPx = with(density) { barWidth.toPx() }
     val spacingPx = with(density) { barSpacing.toPx() }
     val totalWidthPx = max(1f, (barWidthPx + spacingPx) * barCount - spacingPx)
-
 
     val padStartPx = viewportWidthPx / 2f
     val paddedTotalWidthPx = totalWidthPx + viewportWidthPx
@@ -807,7 +828,5 @@ private fun WaveformBars(
                 cornerRadius = CornerRadius(rectWidth / 2f, rectWidth / 2f)
             )
         }
-
     }
 }
-

@@ -24,7 +24,7 @@ fun ActionTile(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
             modifier = Modifier.clickable(
@@ -32,11 +32,15 @@ fun ActionTile(
             ),
             leadingContent = leading,
             colors = ListItemDefaults.colors(
-                containerColor = if(danger) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainerLowest
+                containerColor = if (danger) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainerLowest
             ),
-            headlineContent = { Text(headline, color = if(danger) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface) },
+            headlineContent = {
+                Text(
+                    headline,
+                    color = if (danger) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface
+                )
+            },
             supportingContent = {
-
                 if (description != null) {
                     Text(description, color = colorDesc)
                 }

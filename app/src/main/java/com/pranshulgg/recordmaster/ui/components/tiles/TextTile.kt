@@ -11,15 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-fun TextTile(
-    headline: String,
-    description: String? = null,
-    leading: @Composable (() -> Unit)? = null,
-    shapes: RoundedCornerShape
-) {
+fun TextTile(headline: String, description: String? = null, leading: @Composable (() -> Unit)? = null, shapes: RoundedCornerShape) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
 

@@ -20,19 +20,10 @@ import androidx.compose.ui.unit.dp
 import com.pranshulgg.recordmaster.ui.components.Symbol
 
 @Composable
-fun CategoryTile(
-    headline: String,
-    description: String? = null,
-    leading: Int,
-    shapes: RoundedCornerShape,
-    color: Color,
-    iconColor: Color,
-    onClick: () -> Unit
-
-) {
+fun CategoryTile(headline: String, description: String? = null, leading: Int, shapes: RoundedCornerShape, color: Color, iconColor: Color, onClick: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
             modifier = Modifier.clickable(
@@ -55,7 +46,7 @@ fun CategoryTile(
 @Composable
 fun IconContainer(color: Color, icon: Int, iconColor: Color) {
     Surface(
-        shape = RoundedCornerShape(50.dp),
+        shape = RoundedCornerShape(50.dp)
     ) {
         Box(
             modifier = Modifier
@@ -67,5 +58,4 @@ fun IconContainer(color: Color, icon: Int, iconColor: Color) {
             Symbol(icon, color = iconColor)
         }
     }
-
 }

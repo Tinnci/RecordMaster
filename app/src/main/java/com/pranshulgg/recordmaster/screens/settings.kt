@@ -119,15 +119,12 @@ fun SettingsPage(
 //                        onClick = { showBottomSheet = true }
                         onClick = {
                             showBottomSheet = true
-
                         }
-                    ),
+                    )
             ) {
             }
         }
     }
-
-
 
     val isSysDark = isSystemInDarkTheme()
 
@@ -146,7 +143,7 @@ fun SettingsPage(
                         )
                     }
                 },
-                scrollBehavior = scrollBehavior,
+                scrollBehavior = scrollBehavior
             )
         }
     ) { innerPadding ->
@@ -178,14 +175,17 @@ fun SettingsPage(
                                 PreferencesHelper.setString("AppTheme", selectedOption)
 
                                 onThemeChanged(isDark)
-
                             }
                         ),
                         SettingTile.SwitchTile(
                             leading = {
-                                if (useCustomColor) openColorPickerLead() else SettingsTileIcon(
-                                    R.drawable.colorize_24px
-                                )
+                                if (useCustomColor) {
+                                    openColorPickerLead()
+                                } else {
+                                    SettingsTileIcon(
+                                        R.drawable.colorize_24px
+                                    )
+                                }
                             },
                             title = "Use custom color",
                             description = "Select a seed color to generate the theme",
@@ -200,7 +200,6 @@ fun SettingsPage(
                                     PreferencesHelper.setString("seedColor", "0xff0000FF")
                                     onSeedChanged("0xff0000FF")
                                 }
-
                             }
                         ),
                         SettingTile.SwitchTile(
@@ -222,7 +221,7 @@ fun SettingsPage(
                                 }
                                 useDynamicColor = checked
                             }
-                        ),
+                        )
                     )
                 )
             }
@@ -232,20 +231,20 @@ fun SettingsPage(
                     title = "Additional",
                     tiles = listOf(
                         SettingTile.ActionTile(
-                            leading = {SettingsTileIcon(R.drawable.info_24px)},
+                            leading = { SettingsTileIcon(R.drawable.info_24px) },
                             title = "About app",
                             description = "Terms, Version, License, and More",
                             onClick = {
                                 navController.navigate("OpenAboutScreen")
-                            },
+                            }
                         )
                     )
                 )
             }
         }
 
-        if(showBottomSheet){
-            ColorPickerSheetTheme (
+        if (showBottomSheet) {
+            ColorPickerSheetTheme(
                 onShowSheet = showBottomSheet,
                 sheetState = sheetState,
                 initialColorInt = initialColorInt,
@@ -264,13 +263,10 @@ fun SettingsPage(
                     onSeedChanged(pickedColor)
                     PreferencesHelper.setString("seedColor", pickedColor)
                 },
-                hideColorSheet ={
+                hideColorSheet = {
                     hideColorSheet()
                 }
             )
         }
-
     }
 }
-
-

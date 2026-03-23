@@ -25,12 +25,7 @@ sealed class SettingTile {
     abstract val title: String
     abstract val description: String?
 
-    data class TextTile(
-        override val title: String,
-        override val description: String? = null,
-        val leading: (@Composable (() -> Unit))? = null,
-    ) : SettingTile()
-
+    data class TextTile(override val title: String, override val description: String? = null, val leading: (@Composable (() -> Unit))? = null) : SettingTile()
 
     data class SwitchTile(
         override val title: String,
@@ -80,7 +75,6 @@ sealed class SettingTile {
         val danger: Boolean = false
     ) : SettingTile()
 
-
     data class DialogTextFieldTile(
         override val title: String,
         override val description: String? = null,
@@ -104,18 +98,10 @@ sealed class SettingTile {
         val isDescriptionAsValue: Boolean = false
 
     ) : SettingTile()
-
 }
 
-
 @Composable
-fun SettingSection(
-    tiles: List<SettingTile>,
-    title: String? = null,
-    primarySwitch: Boolean = false,
-    noPadding: Boolean = false,
-    errorTile: Boolean = false
-) {
+fun SettingSection(tiles: List<SettingTile>, title: String? = null, primarySwitch: Boolean = false, noPadding: Boolean = false, errorTile: Boolean = false) {
     Column(
         modifier = Modifier
             .padding(horizontal = if (noPadding) 0.dp else 12.dp),
@@ -131,14 +117,11 @@ fun SettingSection(
             )
         }
 
-
-
         tiles.forEachIndexed { index, tile ->
             val isFirst = index == 0
             val isLast = index == tiles.lastIndex
             val isOnly = tiles.size == 1
             val primarySwitch = primarySwitch
-
 
             val shape = when {
                 primarySwitch -> RoundedCornerShape(50.dp)
@@ -177,7 +160,6 @@ fun SettingSection(
                     iconColor = tile.onColor,
                     onClick = tile.onClick
                 )
-
 
                 is SettingTile.DialogOptionTile -> DialogOptionTile(
                     headline = tile.title,
@@ -250,4 +232,3 @@ fun SettingSection(
         }
     }
 }
-

@@ -43,8 +43,7 @@ fun ColorPickerSheetTheme(
     useExpressiveColor: Boolean,
     onSeedChanged: (String) -> Unit,
     hideColorSheet: () -> Unit
-){
-
+) {
     var pickedColor = PreferencesHelper.getString("seedColor") ?: "0xff0000FF"
 
     ModalBottomSheet(
@@ -69,13 +68,10 @@ fun ColorPickerSheetTheme(
             }
         }
     ) {
-
         Column(
             Modifier.padding(bottom = 16.dp)
         ) {
-
             Spacer(Modifier.height(12.dp))
-
 
             HsvColorPicker(
                 modifier = Modifier
@@ -87,7 +83,7 @@ fun ColorPickerSheetTheme(
                 drawOnPosSelected = {
                     drawColorIndicator(
                         controller.selectedPoint.value,
-                        controller.selectedColor.value,
+                        controller.selectedColor.value
                     )
                 },
                 onColorChanged = { colorEnvelope: ColorEnvelope ->
@@ -97,14 +93,12 @@ fun ColorPickerSheetTheme(
 
 //                    pickedColor = argbHex
                     onPickedColor(argbHex)
-
                 }
             )
             Spacer(Modifier.height(12.dp))
 
             SettingSection(
                 tiles = listOf(
-
 
                     SettingTile.SingleSwitchTile(
                         title = "Use expressive palette",
@@ -131,7 +125,8 @@ fun ColorPickerSheetTheme(
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
                     onClick = {
                         hideColorSheet()
-                    }, shapes = ButtonDefaults.shapes()
+                    },
+                    shapes = ButtonDefaults.shapes()
                 ) {
                     Text(
                         "Cancel",
@@ -146,14 +141,11 @@ fun ColorPickerSheetTheme(
                     },
 
                     shapes = ButtonDefaults.shapes(),
-                    modifier = Modifier.defaultMinSize(minWidth = 90.dp, minHeight = 45.dp),
+                    modifier = Modifier.defaultMinSize(minWidth = 90.dp, minHeight = 45.dp)
                 ) {
                     Text("Save", fontSize = 16.sp)
                 }
-
             }
         }
-
     }
-
 }

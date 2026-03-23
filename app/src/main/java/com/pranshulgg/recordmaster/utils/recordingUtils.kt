@@ -17,8 +17,7 @@ fun computeDirKey(dir: File): Long {
     return total
 }
 
-
- fun moveFileToDir(file: File, targetDir: File) {
+fun moveFileToDir(file: File, targetDir: File) {
     try {
         val target = File(targetDir, file.name)
         if (!file.renameTo(target)) {
@@ -28,11 +27,15 @@ fun computeDirKey(dir: File): Long {
     } catch (_: Exception) { }
 }
 
- fun stopIfPlayingAndCleanup(file: File, mediaPlayerState: MutableState<MediaPlayer?>, playingPath: String?) {
+fun stopIfPlayingAndCleanup(file: File, mediaPlayerState: MutableState<MediaPlayer?>, playingPath: String?) {
     val mp = mediaPlayerState.value
     if (playingPath == file.absolutePath) {
-        try { mp?.stop() } catch (_: Exception) {}
-        try { mp?.release() } catch (_: Exception) {}
+        try {
+            mp?.stop()
+        } catch (_: Exception) {}
+        try {
+            mp?.release()
+        } catch (_: Exception) {}
         mediaPlayerState.value = null
     }
 }

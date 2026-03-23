@@ -1,10 +1,9 @@
 package com.pranshulgg.recordmaster.helpers
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
 
 object SnackbarManager {
     private var hostState: SnackbarHostState? = null
@@ -15,10 +14,7 @@ object SnackbarManager {
         scope = coroutineScope
     }
 
-    fun showMessage(
-        message: String,
-        duration: SnackbarDuration = SnackbarDuration.Short
-    ) {
+    fun showMessage(message: String, duration: SnackbarDuration = SnackbarDuration.Short) {
         val state = hostState
         val coroutineScope = scope
         if (state != null && coroutineScope != null) {
@@ -31,5 +27,3 @@ object SnackbarManager {
         }
     }
 }
-
-

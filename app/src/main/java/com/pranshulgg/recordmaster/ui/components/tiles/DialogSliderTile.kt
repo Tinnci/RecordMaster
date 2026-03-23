@@ -1,38 +1,21 @@
 package com.pranshulgg.recordmaster.ui.components.tiles
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsDraggedAsState
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
-import com.pranshulgg.recordmaster.ui.components.Symbol
 import java.time.temporal.TemporalQueries.offset
 
 @Composable
@@ -54,7 +37,7 @@ fun DialogSliderTile(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = shapes,
+        shape = shapes
     ) {
         ListItem(
             modifier = Modifier.clickable { showDialog = true },
@@ -75,7 +58,7 @@ fun DialogSliderTile(
                         color = MaterialTheme.colorScheme.tertiary
                     )
                 }
-            },
+            }
         )
     }
 
@@ -97,7 +80,6 @@ fun DialogSliderTile(
                 }
             },
             confirmButton = {
-
                 TextButton(
                     onClick = {
                         onValueSubmitted(sliderValue)
@@ -115,12 +97,10 @@ fun DialogSliderTile(
                 ) {
                     Text("Cancel", fontWeight = FontWeight.W600, fontSize = 16.sp)
                 }
-
             }
         )
     }
 }
-
 
 @Composable
 fun LabeledSlider(

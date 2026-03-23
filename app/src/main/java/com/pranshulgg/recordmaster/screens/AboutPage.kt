@@ -1,7 +1,6 @@
 package com.pranshulgg.recordmaster.screens
 
 import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,20 +52,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.core.net.toUri
+import androidx.navigation.NavController
 import com.pranshulgg.recordmaster.R
 import com.pranshulgg.recordmaster.ui.components.Symbol
 import com.pranshulgg.recordmaster.utils.bottomPadding
+import com.pranshulgg.recordmaster.utils.topPadding
+import dev.jeziellago.compose.markdowntext.MarkdownText
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
-import java.net.HttpURLConnection
-import java.net.URL
-import com.pranshulgg.recordmaster.utils.topPadding
-import dev.jeziellago.compose.markdowntext.MarkdownText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,9 +88,8 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.surfaceContainer,
-                    shape = RoundedCornerShape(bottomEnd = 28.dp, bottomStart = 28.dp),
+                    shape = RoundedCornerShape(bottomEnd = 28.dp, bottomStart = 28.dp)
                 ) {
-
                     Row(
                         modifier = Modifier.padding(
                             top = topPadding() + 12.dp,
@@ -101,7 +99,6 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                         ),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-
                         Column(
                             verticalArrangement = Arrangement.spacedBy(
                                 space = 5.dp,
@@ -125,11 +122,8 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                             modifier = Modifier.size(80.dp)
                         )
                     }
-
-
                 }
             }
-
         }
     ) { innerPadding ->
         Column(
@@ -188,17 +182,16 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
             ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
 
-                    ) {
+                ) {
                     Column(
                         modifier = Modifier.padding(top = 12.dp)
                     ) {
-
                         ListItem(
                             colors = ListItemDefaults.colors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -230,20 +223,14 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                         Spacer(Modifier.height(bottomPadding()))
                     }
                 }
-
             }
         }
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CheckForUpdateBtn(
-    currentVersion: String,
-    githubRepo: String = "Tinnci/RecordMaster",
-    snackbarHostState: SnackbarHostState? = null
-) {
+fun CheckForUpdateBtn(currentVersion: String, githubRepo: String = "Tinnci/RecordMaster", snackbarHostState: SnackbarHostState? = null) {
     val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     var isChecking by remember { mutableStateOf(false) }
@@ -337,7 +324,6 @@ fun CheckForUpdateBtn(
             color = MaterialTheme.colorScheme.primary
         )
     }
-
 }
 
 @Composable
@@ -360,7 +346,6 @@ fun IconAvatarLeading(icon: Int) {
 fun TermsPage(navController: NavController) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
 
     val markdownData = """
 These Terms & Conditions apply to the **RecordMaster** app (the "Application") for mobile devices.  
@@ -409,7 +394,7 @@ If you have any questions about these Terms & Conditions, please contact:
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                },
+                }
             )
         }
     ) { innerPadding ->
@@ -433,7 +418,6 @@ If you have any questions about these Terms & Conditions, please contact:
             }
         }
     }
-
 }
 
 // PRIVACY PAGE
@@ -443,7 +427,6 @@ If you have any questions about these Terms & Conditions, please contact:
 fun PolicyPage(navController: NavController) {
     val context = LocalContext.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
 
     val markdownData = """
 RecordMaster is an open-source application.  
@@ -487,7 +470,7 @@ If you have any questions about privacy while using RecordMaster, please contact
                             color = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                },
+                }
             )
         }
     ) { innerPadding ->
@@ -511,5 +494,4 @@ If you have any questions about privacy while using RecordMaster, please contact
             }
         }
     }
-
 }

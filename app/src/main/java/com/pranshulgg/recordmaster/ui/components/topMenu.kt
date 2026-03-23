@@ -1,14 +1,7 @@
 package com.pranshulgg.recordmaster.ui.components
 
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.media.MediaMetadataRetriever
-import android.os.Build
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -28,7 +20,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -39,17 +30,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.pranshulgg.recordmaster.R
-import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +55,8 @@ fun DropdownMenu(navController: NavController, onDelete: () -> Unit, onShare: ()
 
     Tooltip("More options", preferredPosition = TooltipAnchorPosition.Below, spacing = 10.dp) {
         IconButton(
-            onClick = { expanded = !expanded }, shapes = IconButtonDefaults.shapes()
+            onClick = { expanded = !expanded },
+            shapes = IconButtonDefaults.shapes()
         ) {
             Symbol(
                 R.drawable.more_vert_24px,
@@ -107,8 +96,6 @@ fun DropdownMenu(navController: NavController, onDelete: () -> Unit, onShare: ()
             leadingIcon = { DropDownMenuIcon(R.drawable.info_24px) }
         )
     }
-
-
 
     if (showAboutBottomSheet) {
         ModalBottomSheet(
@@ -176,14 +163,11 @@ fun DropdownMenu(navController: NavController, onDelete: () -> Unit, onShare: ()
                 }
 
                 Spacer(Modifier.height(10.dp))
-
             }
-
         }
-        }
+    }
 
-
-        if (showCurrentRecordDeleteDialog) {
+    if (showCurrentRecordDeleteDialog) {
         ConfirmDialog(
             title = "Delete recording",
             message = "The recording will be permanently deleted and cannot be undone",
@@ -196,71 +180,56 @@ fun DropdownMenu(navController: NavController, onDelete: () -> Unit, onShare: ()
             onDismiss = { showCurrentRecordDeleteDialog = false }
         )
     }
-
 }
-
 
 @Composable
-fun DropDownMenuText(text: String) =
-    Text(
-        text,
-        fontSize = 16.sp,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(end = 10.dp)
-    )
-
-@Composable
-fun DropDownMenuIcon(icon: Int) =
-    Symbol(icon, color = MaterialTheme.colorScheme.onSurface, size = 22.dp, paddingStart = 3.dp)
-
-
-
-fun getAudioEncoding(file: File): String {
-    return try {
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(file.absolutePath)
-        val mime = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
-        retriever.release()
-        mime ?: file.extension
-    } catch (e: Exception) {
-        file.extension
-    }
-}
-
-fun getAudioInfo(file: File): AudioInfo {
-    return try {
-        val retriever = MediaMetadataRetriever()
-        retriever.setDataSource(file.absolutePath)
-
-        val mime = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
-        val durationMs =
-            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
-                ?: 0L
-
-        retriever.release()
-
-        AudioInfo(
-            encoding = mime ?: file.extension,
-            duration = durationMs,
-            size = file.length(),
-            path = file.absolutePath
-        )
-    } catch (e: Exception) {
-        AudioInfo(
-            encoding = file.extension,
-            duration = 0L,
-            size = file.length(),
-            path = file.absolutePath
-        )
-    }
-}
-
-data class AudioInfo(
-    val encoding: String,
-    val duration: Long,
-    val size: Long,
-    val path: String
+fun DropDownMenuText(text: String) = Text(
+    text,
+    fontSize = 16.sp,
+    color = MaterialTheme.colorScheme.onSurface,
+    modifier = Modifier.padding(end = 10.dp)
 )
+
+@Composable
+fun DropDownMenuIcon(icon: Int) = Symbol(icon, color = MaterialTheme.colorScheme.onSurface, size = 22.dp, paddingStart = 3.dp)
+
+fun getAudioEncoding(file: File): String = try {
+    val retriever = MediaMetadataRetriever()
+    retriever.setDataSource(file.absolutePath)
+    val mime = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+    retriever.release()
+    mime ?: file.extension
+} catch (e: Exception) {
+    file.extension
+}
+
+fun getAudioInfo(file: File): AudioInfo = try {
+    val retriever = MediaMetadataRetriever()
+    retriever.setDataSource(file.absolutePath)
+
+    val mime = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)
+    val durationMs =
+        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toLongOrNull()
+            ?: 0L
+
+    retriever.release()
+
+    AudioInfo(
+        encoding = mime ?: file.extension,
+        duration = durationMs,
+        size = file.length(),
+        path = file.absolutePath
+    )
+} catch (e: Exception) {
+    AudioInfo(
+        encoding = file.extension,
+        duration = 0L,
+        size = file.length(),
+        path = file.absolutePath
+    )
+}
+
+data class AudioInfo(val encoding: String, val duration: Long, val size: Long, val path: String)
 
 fun formatDuration(ms: Long): String {
     val totalSeconds = ms / 1000
@@ -268,10 +237,11 @@ fun formatDuration(ms: Long): String {
     val minutes = (totalSeconds % 3600) / 60
     val seconds = totalSeconds % 60
 
-    return if (hours > 0)
+    return if (hours > 0) {
         String.format(Locale.getDefault(), "%d:%02d:%02d", hours, minutes, seconds)
-    else
+    } else {
         String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
+    }
 }
 
 fun formatFileSize(bytes: Long): String {

@@ -4,7 +4,6 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Environment
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -67,18 +66,15 @@ import com.pranshulgg.recordmaster.ui.components.TopBarWithSearch
 import com.pranshulgg.recordmaster.utils.computeDirKey
 import com.pranshulgg.recordmaster.utils.moveFileToDir
 import com.pranshulgg.recordmaster.utils.stopIfPlayingAndCleanup
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostState){
+fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostState) {
     val context = LocalContext.current
     val locale = LocalLocale.current.platformLocale
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -125,13 +121,11 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
     var rootDirKey by remember { mutableLongStateOf(0L) }
     var garbageDirKey by remember { mutableLongStateOf(0L) }
 
-
     fun toggleSelection(path: String) {
         selectedPaths = if (selectedPaths.contains(path)) selectedPaths - path else selectedPaths + path
     }
     var showGarbageConfirmDeleteSelectedDialog by remember { mutableStateOf(false) }
     var showGarbageConfirmDeleteDialog by remember { mutableStateOf(false) }
-
 
     fun shareSelected() {
         if (selectedPaths.isEmpty()) return
@@ -184,7 +178,9 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
             showGarbageConfirmDeleteSelectedDialog = true
         } else {
             files.forEach { file ->
-                try { moveFileToDir(file, garbageDir) } catch (_: Throwable) {}
+                try {
+                    moveFileToDir(file, garbageDir)
+                } catch (_: Throwable) {}
             }
             scope.launch { showMessage("Moved to garbage") }
         }
@@ -206,7 +202,9 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
             cancelText = "Cancel",
             onConfirm = {
                 filesToDelete.forEach { file ->
-                    try { file.delete() } catch (_: Throwable) {}
+                    try {
+                        file.delete()
+                    } catch (_: Throwable) {}
                 }
                 filesToDelete = emptyList()
                 showGarbageConfirmDeleteSelectedDialog = false
@@ -266,7 +264,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
             floatingActionButtonPosition = FabPosition.Center,
             floatingActionButton = {
                 AnimatedVisibility(
-                    visible =  currentTab == "home" && !showSearch,
+                    visible = currentTab == "home" && !showSearch,
                     enter = scaleIn(
                         initialScale = 0.8f,
                         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()
@@ -274,7 +272,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     exit = scaleOut(
                         targetScale = 0.8f,
                         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()
-                    ) + fadeOut(),
+                    ) + fadeOut()
                 ) {
                     FloatingActionButton(
                         modifier = Modifier.size(96.dp),
@@ -299,7 +297,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     openDrawer = { scope.launch { drawerState.open() } },
                     currentTab = currentTab,
                     selectedFolderName = selectedFolderName,
-                    clearSearchQuery = {searchQuery = ""},
+                    clearSearchQuery = { searchQuery = "" },
                     onRequestDeleteFolder = { name ->
                         folderToDeleteName = name
                         showDeleteFolderDialog = true
@@ -315,14 +313,12 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     },
                     onDeleteSelected = {
                         deleteSelected()
-
                     },
                     onCloseSelection = {
                         selectedPaths = emptySet()
                     },
                     selectedCount = selectedPaths.size.toString()
                 )
-
             }
 
         ) { innerPadding ->
@@ -331,8 +327,6 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     .padding(top = innerPadding.calculateTopPadding())
                     .fillMaxSize()
             ) {
-
-
                 val rootFiles by remember(rootDirKey) {
                     mutableStateOf(
                         (musicDir.listFiles() ?: emptyArray())
@@ -353,12 +347,14 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     mutableStateOf(
                         if (!selectedFolderName.isNullOrEmpty()) {
                             val f = File(musicDir, selectedFolderName!!)
-                            (f.listFiles() ?: emptyArray()).filter { it.isFile }.sortedByDescending { it.lastModified() }
-                        } else emptyList()
+                            (f.listFiles() ?: emptyArray()).filter {
+                                it.isFile
+                            }.sortedByDescending { it.lastModified() }
+                        } else {
+                            emptyList()
+                        }
                     )
                 }
-
-
 
                 var isPlaying by remember { mutableStateOf(false) }
                 var currentPos by remember { mutableIntStateOf(0) }
@@ -366,7 +362,9 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
 
                 LaunchedEffect(isPlaying, mediaPlayer.value) {
                     while (isPlaying && mediaPlayer.value != null) {
-                        try { currentPos = mediaPlayer.value?.currentPosition ?: 0 } catch (_: Exception) {}
+                        try {
+                            currentPos = mediaPlayer.value?.currentPosition ?: 0
+                        } catch (_: Exception) {}
                         delay(200)
                     }
                 }
@@ -390,9 +388,6 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                         .sortedByDescending { it.lastModified() }
                 }
 
-
-
-
                 if (displayedRecordings.isEmpty()) {
                     EmptyContainerPlaceholder(R.drawable.graphic_eq_24px, "No recordings")
                 } else {
@@ -408,21 +403,27 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     ) {
                         grouped.forEach { (month, files) ->
                             item {
-                                    Text(
-                                        text = month,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.W700,
-                                        fontSize = 16.sp
+                                Text(
+                                    text = month,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.W700,
+                                    fontSize = 16.sp
 
-                                    )
-                                    Spacer(modifier = Modifier.height(6.dp))
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
                             }
 
                             items(files) { file ->
                                 RecordingRow(
                                     file = file,
                                     isThisPlaying = playingPath == file.absolutePath && isPlaying,
-                                    progress = if (playingPath == file.absolutePath && duration > 0) (currentPos.toFloat() / duration.toFloat()).coerceIn(0f, 1f) else 0f,
+                                    progress = if (playingPath == file.absolutePath &&
+                                        duration > 0
+                                    ) {
+                                        (currentPos.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
+                                    } else {
+                                        0f
+                                    },
                                     currentPositionMillis = currentPos,
                                     currentDurationMillis = duration,
                                     onItemClick = {
@@ -440,9 +441,11 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                                         if (playingPath == file.absolutePath) {
                                             val mp = mediaPlayer.value
                                             if (mp != null && mp.isPlaying) {
-                                                mp.pause(); isPlaying = false
+                                                mp.pause()
+                                                isPlaying = false
                                             } else if (mp != null) {
-                                                mp.start(); isPlaying = true
+                                                mp.start()
+                                                isPlaying = true
                                             }
                                         } else {
                                             try {
@@ -473,9 +476,7 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                                     musicDir = musicDir,
                                     onDelete = {
                                         if (currentTab == "garbage") {
-
                                             showGarbageConfirmDeleteDialog = true
-
                                         } else {
                                             val fromParent = file.parentFile
                                             moveFileToDir(file, garbageDir)
@@ -486,7 +487,6 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                                                 selectedFolderKey = computeDirKey(File(musicDir, selectedFolderName!!))
                                             }
                                             scope.launch { showMessage("Moved to garbage") }
-
                                         }
                                         selectedPaths = selectedPaths - file.absolutePath
                                     },
@@ -537,15 +537,13 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                                         cancelText = "Cancel",
                                         onConfirm = {
                                             stopIfPlayingAndCleanup(file, mediaPlayer, playingPath)
-                                            if (file.delete()) {  }
+                                            if (file.delete()) { }
                                             garbageDirKey = computeDirKey(garbageDir)
                                         },
                                         onDismiss = { showGarbageConfirmDeleteDialog = false }
                                     )
                                 }
                             }
-
-
 
                             item {
                                 Spacer(modifier = Modifier.height(140.dp))
@@ -556,44 +554,52 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
 
                 if (showCreateFolderDialog) {
                     AlertDialog(
-                        onDismissRequest = { showCreateFolderDialog = false; newFolderName = "" },
+                        onDismissRequest = {
+                            showCreateFolderDialog = false
+                            newFolderName = ""
+                        },
                         title = { Text("Create new folder") },
                         text = {
-                                OutlinedTextField(
-                                    value = newFolderName,
-                                    placeholder = {Text("Folder name")},
-                                    onValueChange = { newFolderName = it },
-                                    singleLine = true
-                                )
+                            OutlinedTextField(
+                                value = newFolderName,
+                                placeholder = { Text("Folder name") },
+                                onValueChange = { newFolderName = it },
+                                singleLine = true
+                            )
                         },
                         confirmButton = {
                             TextButton(
                                 shapes = ButtonDefaults.shapes(),
                                 onClick = {
-                                val name = newFolderName.trim()
-                                if (name.isNotEmpty()) {
-                                    val newDir = File(musicDir, name)
-                                    val created = if (!newDir.exists()) newDir.mkdirs() else true
-                                    if (created) {
-                                        scope.launch {
-                                            showMessage("Folder \"$name\" created")
-                                        }
-                                        rootDirKey = computeDirKey(musicDir)
-                                    } else {
-                                        scope.launch {
-                                            showMessage("Failed to create folder")
+                                    val name = newFolderName.trim()
+                                    if (name.isNotEmpty()) {
+                                        val newDir = File(musicDir, name)
+                                        val created = if (!newDir.exists()) newDir.mkdirs() else true
+                                        if (created) {
+                                            scope.launch {
+                                                showMessage("Folder \"$name\" created")
+                                            }
+                                            rootDirKey = computeDirKey(musicDir)
+                                        } else {
+                                            scope.launch {
+                                                showMessage("Failed to create folder")
+                                            }
                                         }
                                     }
+                                    showCreateFolderDialog = false
+                                    newFolderName = ""
+                                    foldersExpanded = false
                                 }
-                                showCreateFolderDialog = false
-                                newFolderName = ""
-                                foldersExpanded = false
-                            }) { Text("Create", fontWeight = FontWeight.W600, fontSize = 16.sp) }
+                            ) { Text("Create", fontWeight = FontWeight.W600, fontSize = 16.sp) }
                         },
                         dismissButton = {
                             TextButton(
                                 shapes = ButtonDefaults.shapes(),
-                                onClick = { showCreateFolderDialog = false; newFolderName = "" }) {
+                                onClick = {
+                                    showCreateFolderDialog = false
+                                    newFolderName = ""
+                                }
+                            ) {
                                 Text("Cancel", fontWeight = FontWeight.W600, fontSize = 16.sp)
                             }
                         }
@@ -602,7 +608,10 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
 
                 if (showDeleteFolderDialog && !folderToDeleteName.isNullOrEmpty()) {
                     AlertDialog(
-                        onDismissRequest = { showDeleteFolderDialog = false; folderToDeleteName = null },
+                        onDismissRequest = {
+                            showDeleteFolderDialog = false
+                            folderToDeleteName = null
+                        },
                         title = { Text("Delete folder \"${folderToDeleteName}\"?") },
                         text = {
                             Text("Contents will be moved to Recently deleted, then the folder will be removed.")
@@ -611,33 +620,39 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                             TextButton(
                                 shapes = ButtonDefaults.shapes(),
                                 onClick = {
-                                val name = folderToDeleteName!!
-                                val target = File(musicDir, name)
-                                try {
-                                    (target.listFiles() ?: emptyArray()).filter { it.isFile }.forEach { f ->
-                                        try { moveFileToDir(f, garbageDir) } catch (_: Throwable) {}
+                                    val name = folderToDeleteName!!
+                                    val target = File(musicDir, name)
+                                    try {
+                                        (target.listFiles() ?: emptyArray()).filter { it.isFile }.forEach { f ->
+                                            try {
+                                                moveFileToDir(f, garbageDir)
+                                            } catch (_: Throwable) {}
+                                        }
+                                        target.deleteRecursively()
+                                        scope.launch {
+                                            showMessage("Folder \"$name\" deleted")
+                                        }
+                                    } catch (t: Throwable) {
+                                        scope.launch {
+                                            showMessage("Failed to delete folder")
+                                        }
                                     }
-                                    target.deleteRecursively()
-                                    scope.launch {
-                                        showMessage("Folder \"$name\" deleted")
-                                    }
-
-                                } catch (t: Throwable) {
-                                    scope.launch {
-                                        showMessage("Failed to delete folder")
-                                    }
+                                    folderToDeleteName = null
+                                    showDeleteFolderDialog = false
+                                    rootDirKey = computeDirKey(musicDir)
+                                    garbageDirKey = computeDirKey(garbageDir)
+                                    currentTab = "home"
                                 }
-                                folderToDeleteName = null
-                                showDeleteFolderDialog = false
-                                rootDirKey = computeDirKey(musicDir)
-                                garbageDirKey = computeDirKey(garbageDir)
-                                currentTab = "home"
-                            }) { Text("Delete", fontWeight = FontWeight.W600, fontSize = 16.sp) }
+                            ) { Text("Delete", fontWeight = FontWeight.W600, fontSize = 16.sp) }
                         },
                         dismissButton = {
                             TextButton(
                                 shapes = ButtonDefaults.shapes(),
-                                onClick = { showDeleteFolderDialog = false; folderToDeleteName = null }) {
+                                onClick = {
+                                    showDeleteFolderDialog = false
+                                    folderToDeleteName = null
+                                }
+                            ) {
                                 Text("Cancel", fontWeight = FontWeight.W600, fontSize = 16.sp)
                             }
                         }
@@ -646,8 +661,12 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
 
                 DisposableEffect(Unit) {
                     onDispose {
-                        try { mediaPlayer.value?.stop() } catch (_: Exception) {}
-                        try { mediaPlayer.value?.release() } catch (_: Exception) {}
+                        try {
+                            mediaPlayer.value?.stop()
+                        } catch (_: Exception) {}
+                        try {
+                            mediaPlayer.value?.release()
+                        } catch (_: Exception) {}
                         mediaPlayer.value = null
                     }
                 }
@@ -655,5 +674,3 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
         }
     }
 }
-
-

@@ -11,14 +11,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun ConfirmDialog(
-    title: String,
-    message: String,
-    confirmText: String = "OK",
-    cancelText: String = "Cancel",
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
+fun ConfirmDialog(title: String, message: String, confirmText: String = "OK", cancelText: String = "Cancel", onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(title) },

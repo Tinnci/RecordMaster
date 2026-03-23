@@ -1,30 +1,28 @@
 package com.pranshulgg.recordmaster.ui.components
 
-import androidx.compose.runtime.Composable
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.Modifier
-import androidx.compose.runtime.*
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Alignment
-import androidx.compose.material3.TopAppBarDefaults
-import com.pranshulgg.recordmaster.ui.components.Symbol
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pranshulgg.recordmaster.R
-import kotlinx.coroutines.launch
+import com.pranshulgg.recordmaster.ui.components.Symbol
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -53,8 +51,7 @@ fun TopBarWithSearch(
             scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
         actions = {
-
-            if(!isSelecting) {
+            if (!isSelecting) {
                 if (!showSearch) {
                     IconButton(
                         onClick = { onToggleSearch() },
@@ -78,20 +75,20 @@ fun TopBarWithSearch(
                 }
             }
 
-            if(!isSelecting) {
-            if (currentTab != "home" && currentTab != "garbage") {
-                IconButton(onClick = {
-                    onRequestDeleteFolder(selectedFolderName)
-                }, shapes = IconButtonDefaults.shapes()) {
-                    Symbol(
-                        R.drawable.delete_24px,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+            if (!isSelecting) {
+                if (currentTab != "home" && currentTab != "garbage") {
+                    IconButton(onClick = {
+                        onRequestDeleteFolder(selectedFolderName)
+                    }, shapes = IconButtonDefaults.shapes()) {
+                        Symbol(
+                            R.drawable.delete_24px,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
-        }
 
-            if(isSelecting){
+            if (isSelecting) {
                 IconButton(onClick = {
                     onDeleteSelected()
                 }, shapes = IconButtonDefaults.shapes()) {
@@ -114,7 +111,7 @@ fun TopBarWithSearch(
             if (showSearch) {
                 BasicTextField(
                     value = searchQuery,
-                    onValueChange =  onSearchChange ,
+                    onValueChange = onSearchChange,
                     textStyle = TextStyle(
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 17.sp
@@ -127,7 +124,7 @@ fun TopBarWithSearch(
                     decorationBox = { innerTextField ->
 
                         Box(
-                            contentAlignment = Alignment.CenterStart,
+                            contentAlignment = Alignment.CenterStart
                         ) {
                             if (searchQuery.isEmpty()) {
                                 Text(
@@ -140,30 +137,30 @@ fun TopBarWithSearch(
                         }
                     }
                 )
-            } else{
+            } else {
                 val titleText = when (currentTab) {
                     "home" -> "Recordings"
                     "garbage" -> "Recently deleted"
                     "folder" -> selectedFolderName ?: "Folder"
                     else -> "Recordings"
                 }
-                Text(if(isSelecting) "$selectedCount selected" else titleText, fontSize = 20.sp)
+                Text(if (isSelecting) "$selectedCount selected" else titleText, fontSize = 20.sp)
             }
         },
         navigationIcon = {
-            if(!showSearch && !isSelecting) {
+            if (!showSearch && !isSelecting) {
                 IconButton(onClick = { openDrawer() }, shapes = IconButtonDefaults.shapes()) {
-                    Symbol(R.drawable.menu_24px,  color = MaterialTheme.colorScheme.onSurface)
+                    Symbol(R.drawable.menu_24px, color = MaterialTheme.colorScheme.onSurface)
                 }
-            } else{
+            } else {
                 IconButton(onClick = {
-                    if(!isSelecting) {
+                    if (!isSelecting) {
                         onBack()
-                    } else{
+                    } else {
                         onCloseSelection()
                     }
                 }, shapes = IconButtonDefaults.shapes()) {
-                    Symbol(R.drawable.arrow_back_24px,  color = MaterialTheme.colorScheme.onSurface)
+                    Symbol(R.drawable.arrow_back_24px, color = MaterialTheme.colorScheme.onSurface)
                 }
             }
         }

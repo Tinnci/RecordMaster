@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package com.pranshulgg.recordmaster.ui.components
 
 import androidx.compose.animation.core.animateDpAsState
@@ -5,7 +7,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -15,13 +22,14 @@ import com.pranshulgg.recordmaster.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Suppress("ktlint:standard:function-naming")
 fun RecorderSearchBar(
     text: String,
     onTextChange: (String) -> Unit,
     onSearch: () -> Unit,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
-    showMenu: () -> Unit,
+    showMenu: () -> Unit
 ) {
     val horizontalPadding by animateDpAsState(
         targetValue = if (expanded) 0.dp else 16.dp,
@@ -54,7 +62,7 @@ fun RecorderSearchBar(
                 )
             },
             expanded = expanded,
-            onExpandedChange = onExpandedChange,
+            onExpandedChange = onExpandedChange
         ) {
             // suggestions/content slot - we keep empty because HomeScreen will render the expanded list itself
         }
