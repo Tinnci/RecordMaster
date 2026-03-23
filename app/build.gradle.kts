@@ -17,7 +17,7 @@ val releaseVersionNameOverride = providers.gradleProperty("RELEASE_VERSION_NAME"
 val releaseVersionCodeOverride = providers.gradleProperty("RELEASE_VERSION_CODE")
     .orElse(providers.environmentVariable("RELEASE_VERSION_CODE"))
 
-val defaultVersionCode = 2
+val defaultVersionCode = 1000099
 val defaultVersionName = "1.0.0"
 val resolvedVersionName = releaseVersionNameOverride.orNull ?: defaultVersionName
 val resolvedVersionCode = releaseVersionCodeOverride.orNull?.toIntOrNull() ?: defaultVersionCode

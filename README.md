@@ -94,10 +94,40 @@ For tag-triggered release builds, the workflow also derives:
 
 ```text
 RELEASE_VERSION_NAME=1.0.1
-RELEASE_VERSION_CODE=10001
+RELEASE_VERSION_CODE=1000199
 ```
 
-That means the published APK version now follows the tag automatically, as long as the tag format is `vMAJOR.MINOR.PATCH`.
+That means the published APK version now follows the tag automatically.
+
+Supported tag formats:
+
+```text
+vMAJOR.MINOR.PATCH
+vMAJOR.MINOR.PATCH-alpha.N
+vMAJOR.MINOR.PATCH-beta.N
+vMAJOR.MINOR.PATCH-rc.N
+```
+
+Version code strategy:
+
+```text
+stable  -> base + 99
+alpha.N -> base + N
+beta.N  -> base + 30 + N
+rc.N    -> base + 60 + N
+base    -> major * 1000000 + minor * 10000 + patch * 100
+```
+
+Examples:
+
+```text
+v1.0.1-alpha.1 -> versionName 1.0.1-alpha.1, versionCode 1000101
+v1.0.1-beta.1  -> versionName 1.0.1-beta.1,  versionCode 1000131
+v1.0.1-rc.1    -> versionName 1.0.1-rc.1,    versionCode 1000161
+v1.0.1         -> versionName 1.0.1,         versionCode 1000199
+```
+
+Beta and RC tags are published as GitHub prereleases automatically.
 
 First release tag checklist:
 
