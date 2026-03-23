@@ -43,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -69,8 +70,15 @@ import com.pranshulgg.recordmaster.utils.stopIfPlayingAndCleanup
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+private data class RecordingListState(
+    val isLoading: Boolean,
+    val files: List<File>
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -214,14 +222,14 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
     }
 
     LaunchedEffect(musicDir.absolutePath) {
-        rootDirKey = computeDirKey(musicDir)
-        garbageDirKey = computeDirKey(garbageDir)
+        rootDirKey = withContext(Dispatchers.IO) { computeDirKey(musicDir) }
+        garbageDirKey = withContext(Dispatchers.IO) { computeDirKey(garbageDir) }
     }
 
     LaunchedEffect(selectedFolderName, musicDir.absolutePath) {
         if (!selectedFolderName.isNullOrEmpty()) {
             val folder = File(musicDir, selectedFolderName!!)
-            selectedFolderKey = computeDirKey(folder)
+            selectedFolderKey = withContext(Dispatchers.IO) { computeDirKey(folder) }
         } else {
             selectedFolderKey = 0L
         }
@@ -327,35 +335,6 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     .padding(top = innerPadding.calculateTopPadding())
                     .fillMaxSize()
             ) {
-                val rootFiles by remember(rootDirKey) {
-                    mutableStateOf(
-                        (musicDir.listFiles() ?: emptyArray())
-                            .filter { it.isFile }
-                            .sortedByDescending { it.lastModified() }
-                    )
-                }
-
-                val garbageFiles by remember(garbageDirKey) {
-                    mutableStateOf(
-                        (garbageDir.listFiles() ?: emptyArray())
-                            .filter { it.isFile }
-                            .sortedByDescending { it.lastModified() }
-                    )
-                }
-
-                val folderFiles by remember(selectedFolderKey, selectedFolderName) {
-                    mutableStateOf(
-                        if (!selectedFolderName.isNullOrEmpty()) {
-                            val f = File(musicDir, selectedFolderName!!)
-                            (f.listFiles() ?: emptyArray()).filter {
-                                it.isFile
-                            }.sortedByDescending { it.lastModified() }
-                        } else {
-                            emptyList()
-                        }
-                    )
-                }
-
                 var isPlaying by remember { mutableStateOf(false) }
                 var currentPos by remember { mutableIntStateOf(0) }
                 var duration by remember { mutableIntStateOf(0) }
@@ -369,30 +348,69 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                     }
                 }
 
-                val displayedRecordings = if (searchQuery.isBlank()) {
-                    when (currentTab) {
-                        "home" -> rootFiles
-                        "garbage" -> garbageFiles
-                        "folder" -> folderFiles
-                        else -> rootFiles
-                    }
-                } else {
-                    val allCandidates = mutableListOf<File>()
-                    allCandidates += rootFiles
-                    allCandidates += garbageFiles
-                    val allSubfolderFiles = (musicDir.listFiles() ?: emptyArray())
-                        .filter { it.isDirectory && it.name != "garbage" }
-                        .flatMap { (it.listFiles() ?: emptyArray()).filter { f -> f.isFile } }
-                    allCandidates += allSubfolderFiles
-                    allCandidates.filter { it.name.contains(searchQuery, ignoreCase = true) }
-                        .sortedByDescending { it.lastModified() }
+                val recordingsState by produceState(
+                    initialValue = RecordingListState(isLoading = true, files = emptyList()),
+                    currentTab,
+                    searchQuery,
+                    rootDirKey,
+                    garbageDirKey,
+                    selectedFolderKey,
+                    selectedFolderName,
+                    musicDir.absolutePath,
+                    garbageDir.absolutePath
+                ) {
+                    value = value.copy(isLoading = true)
+                    value = RecordingListState(
+                        isLoading = false,
+                        files = withContext(Dispatchers.IO) {
+                            val rootFiles = (musicDir.listFiles() ?: emptyArray())
+                                .filter { it.isFile }
+                                .sortedByDescending { it.lastModified() }
+                            val garbageFiles = (garbageDir.listFiles() ?: emptyArray())
+                                .filter { it.isFile }
+                                .sortedByDescending { it.lastModified() }
+                            val folderFiles = if (!selectedFolderName.isNullOrEmpty()) {
+                                val folder = File(musicDir, selectedFolderName!!)
+                                (folder.listFiles() ?: emptyArray())
+                                    .filter { it.isFile }
+                                    .sortedByDescending { it.lastModified() }
+                            } else {
+                                emptyList()
+                            }
+
+                            if (searchQuery.isBlank()) {
+                                when (currentTab) {
+                                    "home" -> rootFiles
+                                    "garbage" -> garbageFiles
+                                    "folder" -> folderFiles
+                                    else -> rootFiles
+                                }
+                            } else {
+                                buildList {
+                                    addAll(rootFiles)
+                                    addAll(garbageFiles)
+                                    addAll(
+                                        (musicDir.listFiles() ?: emptyArray())
+                                            .filter { it.isDirectory && it.name != "garbage" }
+                                            .flatMap { dir ->
+                                                (dir.listFiles() ?: emptyArray()).filter(File::isFile)
+                                            }
+                                    )
+                                }
+                                    .filter { it.name.contains(searchQuery, ignoreCase = true) }
+                                    .sortedByDescending { it.lastModified() }
+                            }
+                        }
+                    )
                 }
 
-                if (displayedRecordings.isEmpty()) {
+                if (recordingsState.isLoading) {
+                    EmptyContainerPlaceholder(R.drawable.clock_loader_60_24px, "Loading recordings")
+                } else if (recordingsState.files.isEmpty()) {
                     EmptyContainerPlaceholder(R.drawable.graphic_eq_24px, "No recordings")
                 } else {
                     val sdfMonth = remember(locale) { SimpleDateFormat("MMMM", locale) }
-                    val grouped = displayedRecordings
+                    val grouped = recordingsState.files
                         .groupBy { sdfMonth.format(Date(it.lastModified())) }
                         .entries
                         .sortedByDescending { entry -> entry.value.maxOf { it.lastModified() } }

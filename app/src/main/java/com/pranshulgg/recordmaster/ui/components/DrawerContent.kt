@@ -1,6 +1,5 @@
 package com.pranshulgg.recordmaster.ui.components
 
-import android.os.Environment
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,10 +15,10 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,6 +26,13 @@ import androidx.navigation.NavController
 import com.pranshulgg.recordmaster.R
 import java.io.File
 import java.util.Locale
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+private data class FolderEntry(
+    val dir: File,
+    val recordingsCount: Int
+)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -43,10 +49,18 @@ fun DrawerContent(
     navController: NavController,
     closeDrawer: () -> Unit
 ) {
-    val folders = remember(rootDirKey) {
-        (musicDir.listFiles() ?: emptyArray())
-            .filter { it.isDirectory && it.name != "garbage" }
-            .sortedBy { it.name.lowercase(Locale.getDefault()) }
+    val folders by produceState(initialValue = emptyList<FolderEntry>(), rootDirKey, musicDir.absolutePath) {
+        value = withContext(Dispatchers.IO) {
+            (musicDir.listFiles() ?: emptyArray())
+                .filter { it.isDirectory && it.name != "garbage" }
+                .sortedBy { it.name.lowercase(Locale.getDefault()) }
+                .map { dir ->
+                    FolderEntry(
+                        dir = dir,
+                        recordingsCount = dir.listFiles()?.count(File::isFile) ?: 0
+                    )
+                }
+        }
     }
 
     ModalDrawerSheet(
@@ -133,18 +147,12 @@ fun DrawerContent(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        val context = LocalContext.current
-                        val musicDir = remember {
-                            context.getExternalFilesDir(Environment.DIRECTORY_MUSIC) ?: context.filesDir
-                        }
-
-                        folders.forEach { dir ->
-                            val recordingsCount = dir.listFiles()?.count { it.isFile } ?: 0
+                        folders.forEach { folder ->
                             NavigationDrawerItem(
-                                label = { Text(dir.name) },
-                                selected = currentTab == "folder" && selectedFolderName == dir.name,
+                                label = { Text(folder.dir.name) },
+                                selected = currentTab == "folder" && selectedFolderName == folder.dir.name,
                                 icon = {
-                                    if (currentTab == "folder" && selectedFolderName == dir.name) {
+                                    if (currentTab == "folder" && selectedFolderName == folder.dir.name) {
                                         Symbol(
                                             R.drawable.folder_24px,
                                             color = MaterialTheme.colorScheme.onSecondaryContainer
@@ -158,12 +166,12 @@ fun DrawerContent(
                                 },
                                 badge = {
                                     Text(
-                                        recordingsCount.toString(),
+                                        folder.recordingsCount.toString(),
                                         fontSize = 15.sp,
                                         color = MaterialTheme.colorScheme.secondary
                                     )
                                 },
-                                onClick = { onSelectTab("folder", dir.name) }
+                                onClick = { onSelectTab("folder", folder.dir.name) }
                             )
                         }
                         Spacer(Modifier.height(80.dp))
