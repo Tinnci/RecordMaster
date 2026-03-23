@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -409,114 +410,138 @@ fun HomeScreen(navController: NavController, snackbarHostState: SnackbarHostStat
                 } else if (recordingsState.files.isEmpty()) {
                     EmptyContainerPlaceholder(R.drawable.graphic_eq_24px, "No recordings")
                 } else {
+                    if (!showSearch && selectedPaths.isEmpty()) {
+                        HomeOverviewPane(
+                            currentTab = currentTab,
+                            selectedFolderName = selectedFolderName,
+                            recordingCount = recordingsState.files.size,
+                            onStartRecording = { navController.navigate("record") }
+                        )
+                        Spacer(modifier = Modifier.height(14.dp))
+                    }
+
                     val sdfMonth = remember(locale) { SimpleDateFormat("MMMM", locale) }
                     val grouped = recordingsState.files
                         .groupBy { sdfMonth.format(Date(it.lastModified())) }
                         .entries
                         .sortedByDescending { entry -> entry.value.maxOf { it.lastModified() } }
 
-                    LazyColumn(
+                    Surface(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                        shape = MaterialTheme.shapes.extraLarge,
+                        color = MaterialTheme.colorScheme.surfaceContainerLow
                     ) {
-                        grouped.forEach { (month, files) ->
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 14.dp)
+                        ) {
                             item {
                                 Text(
-                                    text = month,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.W700,
-                                    fontSize = 16.sp
-
+                                    text = "Latest by month",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    fontWeight = FontWeight.SemiBold
                                 )
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
                             }
 
-                            items(files) { file ->
-                                RecordingRow(
-                                    file = file,
-                                    isThisPlaying = playingPath == file.absolutePath && isPlaying,
-                                    progress = if (playingPath == file.absolutePath &&
-                                        duration > 0
-                                    ) {
-                                        (currentPos.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
-                                    } else {
-                                        0f
-                                    },
-                                    currentPositionMillis = currentPos,
-                                    currentDurationMillis = duration,
-                                    onItemClick = {
-                                        if (selectedPaths.isNotEmpty()) {
-                                            toggleSelection(file.absolutePath)
-                                        } else {
-                                            val encoded = Uri.encode(file.absolutePath)
-                                            navController.navigate("play/$encoded")
-                                        }
-                                    },
-                                    onLongClick = {
-                                        toggleSelection(file.absolutePath)
-                                    },
-                                    onPlayPause = {
-                                        if (playingPath == file.absolutePath) {
-                                            val mp = mediaPlayer.value
-                                            if (mp != null && mp.isPlaying) {
-                                                mp.pause()
-                                                isPlaying = false
-                                            } else if (mp != null) {
-                                                mp.start()
-                                                isPlaying = true
-                                            }
-                                        } else {
-                                            try {
-                                                mediaPlayer.value?.stop()
-                                                mediaPlayer.value?.release()
-                                            } catch (_: Exception) {}
-                                            mediaPlayer.value = null
-                                            try {
-                                                val mp = MediaPlayer().apply {
-                                                    setDataSource(file.absolutePath)
-                                                    prepare()
-                                                    start()
-                                                }
-                                                mediaPlayer.value = mp
-                                                playingPath = file.absolutePath
-                                                isPlaying = true
-                                                duration = mp.duration
-                                            } catch (e: Exception) {
-                                                isPlaying = false
-                                                playingPath = null
-                                                mediaPlayer.value?.release()
-                                                mediaPlayer.value = null
-                                            }
-                                        }
-                                    },
+                            grouped.forEach { (month, files) ->
+                                item {
+                                    Text(
+                                        text = month,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontWeight = FontWeight.W700
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                }
 
-                                    isGarbage = currentTab == "garbage",
-                                    musicDir = musicDir,
-                                    onDelete = {
-                                        if (currentTab == "garbage") {
-                                            showGarbageConfirmDeleteDialog = true
+                                items(files) { file ->
+                                    RecordingRow(
+                                        file = file,
+                                        isThisPlaying = playingPath == file.absolutePath && isPlaying,
+                                        progress = if (playingPath == file.absolutePath &&
+                                            duration > 0
+                                        ) {
+                                            (currentPos.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
                                         } else {
+                                            0f
+                                        },
+                                        currentPositionMillis = currentPos,
+                                        currentDurationMillis = duration,
+                                        onItemClick = {
+                                            if (selectedPaths.isNotEmpty()) {
+                                                toggleSelection(file.absolutePath)
+                                            } else {
+                                                val encoded = Uri.encode(file.absolutePath)
+                                                navController.navigate("play/$encoded")
+                                            }
+                                        },
+                                        onLongClick = {
+                                            toggleSelection(file.absolutePath)
+                                        },
+                                        onPlayPause = {
+                                            if (playingPath == file.absolutePath) {
+                                                val mp = mediaPlayer.value
+                                                if (mp != null && mp.isPlaying) {
+                                                    mp.pause()
+                                                    isPlaying = false
+                                                } else if (mp != null) {
+                                                    mp.start()
+                                                    isPlaying = true
+                                                }
+                                            } else {
+                                                try {
+                                                    mediaPlayer.value?.stop()
+                                                    mediaPlayer.value?.release()
+                                                } catch (_: Exception) {}
+                                                mediaPlayer.value = null
+                                                try {
+                                                    val mp = MediaPlayer().apply {
+                                                        setDataSource(file.absolutePath)
+                                                        prepare()
+                                                        start()
+                                                    }
+                                                    mediaPlayer.value = mp
+                                                    playingPath = file.absolutePath
+                                                    isPlaying = true
+                                                    duration = mp.duration
+                                                } catch (e: Exception) {
+                                                    isPlaying = false
+                                                    playingPath = null
+                                                    mediaPlayer.value?.release()
+                                                    mediaPlayer.value = null
+                                                }
+                                            }
+                                        },
+
+                                        isGarbage = currentTab == "garbage",
+                                        musicDir = musicDir,
+                                        onDelete = {
+                                            if (currentTab == "garbage") {
+                                                showGarbageConfirmDeleteDialog = true
+                                            } else {
+                                                val fromParent = file.parentFile
+                                                moveFileToDir(file, garbageDir)
+                                                if (playingPath == file.absolutePath) playingPath = null
+                                                rootDirKey = computeDirKey(musicDir)
+                                                garbageDirKey = computeDirKey(garbageDir)
+                                                if (currentTab == "folder" && fromParent?.name == selectedFolderName) {
+                                                    selectedFolderKey = computeDirKey(File(musicDir, selectedFolderName!!))
+                                                }
+                                                scope.launch { showMessage("Moved to garbage") }
+                                            }
+                                            selectedPaths = selectedPaths - file.absolutePath
+                                        },
+
+                                        isSelected = selectedPaths.contains(file.absolutePath),
+
+                                        onRestore = {
                                             val fromParent = file.parentFile
-                                            moveFileToDir(file, garbageDir)
+                                            moveFileToDir(file, musicDir)
                                             if (playingPath == file.absolutePath) playingPath = null
                                             rootDirKey = computeDirKey(musicDir)
                                             garbageDirKey = computeDirKey(garbageDir)
-                                            if (currentTab == "folder" && fromParent?.name == selectedFolderName) {
-                                                selectedFolderKey = computeDirKey(File(musicDir, selectedFolderName!!))
-                                            }
-                                            scope.launch { showMessage("Moved to garbage") }
-                                        }
-                                        selectedPaths = selectedPaths - file.absolutePath
-                                    },
-
-                                    isSelected = selectedPaths.contains(file.absolutePath),
-
-                                    onRestore = {
-                                        val fromParent = file.parentFile
-                                        moveFileToDir(file, musicDir)
-                                        if (playingPath == file.absolutePath) playingPath = null
-                                        rootDirKey = computeDirKey(musicDir)
-                                        garbageDirKey = computeDirKey(garbageDir)
 
                                         if (currentTab == "folder" && fromParent?.name == selectedFolderName) {
                                             selectedFolderKey = computeDirKey(File(musicDir, selectedFolderName!!))

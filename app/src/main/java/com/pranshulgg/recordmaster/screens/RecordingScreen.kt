@@ -65,6 +65,14 @@ fun RecordingScreen(onDone: () -> Unit) {
 
     val recorderRef = remember { mutableStateOf<MediaRecorder?>(null) }
     val outputFileRef = remember { mutableStateOf<File?>(null) }
+        var hasMicPermission by remember {
+            mutableStateOf(
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.RECORD_AUDIO
+                ) == PackageManager.PERMISSION_GRANTED
+            )
+        }
 
     val amplitudes = remember { mutableStateListOf<Float>() }
     val maxSamples = 40
@@ -74,6 +82,7 @@ fun RecordingScreen(onDone: () -> Unit) {
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
+            hasMicPermission = granted
             if (granted) {
                 startRecording(context, recorderRef, outputFileRef, { started ->
                     if (started) {
@@ -212,6 +221,50 @@ fun RecordingScreen(onDone: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Waveform(amplitudes = amplitudes.toList())
+                    Spacer(modifier = Modifier.height(18.dp))
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        colors = CardDefaults.elevatedCardColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp, vertical = 18.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = "Microphone access",
+                                style = MaterialTheme.typography.headlineSmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                            Text(
+                                text = "Grant access before your first recording so RecordMaster can open directly into the capture flow without interruption.",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.88f)
+                            )
+                            FilledTonalButton(
+                                onClick = {
+                                    permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = MaterialTheme.shapes.large
+                            ) {
+                                Symbol(
+                                    R.drawable.fiber_manual_record_24px,
+                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text(
+                                    "Allow microphone and continue",
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(15.dp))
@@ -266,6 +319,10 @@ fun RecordingScreen(onDone: () -> Unit) {
                             onCheckedChange = {
                                 when {
                                     !isRecording -> {
+                                        hasMicPermission = ContextCompat.checkSelfPermission(
+                                            context,
+                                            Manifest.permission.RECORD_AUDIO
+                                        ) == PackageManager.PERMISSION_GRANTED
                                         val permState = ContextCompat.checkSelfPermission(
                                             context,
                                             Manifest.permission.RECORD_AUDIO

@@ -3,7 +3,6 @@ package com.pranshulgg.recordmaster.ui.components
 import android.content.Intent
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -408,20 +407,12 @@ fun RecordingRow(
                                                         false
                                                     }
                                                     showMoveDialog = false
-                                                    if (moved) {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "Moved to ${dir.name}",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                        onMoved()
-                                                    } else {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "Move failed",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
-                                                    }
+                                                        if (moved) {
+                                                            onShowMessage("Moved to ${dir.name}")
+                                                            onMoved()
+                                                        } else {
+                                                            onShowMessage("Move failed")
+                                                        }
                                                 }
                                                 .padding(vertical = 8.dp),
                                             verticalAlignment = Alignment.CenterVertically
