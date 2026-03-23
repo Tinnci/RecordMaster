@@ -108,7 +108,7 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                             )
                             CheckForUpdateBtn(
                                 currentVersion = "v1.1.0",
-                                githubRepo = "PranshulGG/RecordMaster",
+                                githubRepo = "Tinnci/RecordMaster",
                                 snackbarHostState = snackbarHostState
                             )
                         }
@@ -158,7 +158,7 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                 modifier = Modifier
                     .clickable(
                         onClick = {
-                            uriHandler.openUri("https://github.com/PranshulGG/RecordMaster")
+                            uriHandler.openUri("https://github.com/Tinnci/RecordMaster")
                         }
                     )
                     .height(68.dp)
@@ -170,7 +170,7 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
                 modifier = Modifier
                     .clickable(
                         onClick = {
-                            uriHandler.openUri("https://github.com/PranshulGG/RecordMaster/issues/")
+                            uriHandler.openUri("https://github.com/Tinnci/RecordMaster/issues/")
                         }
                     )
                     .height(68.dp)
@@ -234,7 +234,7 @@ fun AboutScreen(snackbarHostState: SnackbarHostState, navController: NavControll
 @Composable
 fun CheckForUpdateBtn(
     currentVersion: String,
-    githubRepo: String = "PranshulGG/RecordMaster",
+    githubRepo: String = "Tinnci/RecordMaster",
     snackbarHostState: SnackbarHostState? = null
 ) {
     val ctx = LocalContext.current

@@ -5,10 +5,10 @@
  RecordMaster
 </h1>
    <div  align="center">
-      <img src="https://img.shields.io/github/license/PranshulGG/RecordMaster?style=for-the-badge&color=cba6f7&labelColor=302D41">
-      <img src="https://img.shields.io/github/last-commit/PranshulGG/RecordMaster?style=for-the-badge&color=b1d18a&labelColor=1f3701">
+      <img src="https://img.shields.io/github/license/Tinnci/RecordMaster?style=for-the-badge&color=cba6f7&labelColor=302D41">
+      <img src="https://img.shields.io/github/last-commit/Tinnci/RecordMaster?style=for-the-badge&color=b1d18a&labelColor=1f3701">
       <br>
-      <img src="https://img.shields.io/github/release/PranshulGG/RecordMaster?style=for-the-badge&color=dbc66e&labelColor=3a3000">
+      <img src="https://img.shields.io/github/release/Tinnci/RecordMaster?style=for-the-badge&color=dbc66e&labelColor=3a3000">
       <br>
       <br>
 
@@ -17,15 +17,16 @@
 
  <div align="center">
 
-[Contact](https://github.com/PranshulGG/RecordMaster?tab=readme-ov-file#contact) • [License](https://github.com/PranshulGG/RecordMaster?tab=readme-ov-file#license)
+[Contact](https://github.com/Tinnci/RecordMaster?tab=readme-ov-file#contact) • [License](https://github.com/Tinnci/RecordMaster?tab=readme-ov-file#license)
 
  </div>
        <div align="center">
    <h3>RecordMaster: inspired by the Google Pixel Recorder app</h3>
+    <p>Fork maintained by Tinnci in 2026.</p>
 
    </div>
 <div align="center">
- <a href="https://github.com/PranshulGG/RecordMaster/releases"><img alt="GitHub" src="https://user-images.githubusercontent.com/69304392/148696068-0cfea65d-b18f-4685-82b5-329a330b1c0d.png" height="80"/></a>
+ <a href="https://github.com/Tinnci/RecordMaster/releases"><img alt="GitHub" src="https://user-images.githubusercontent.com/69304392/148696068-0cfea65d-b18f-4685-82b5-329a330b1c0d.png" height="80"/></a>
    </div>
 <br>
 
@@ -87,7 +88,8 @@ RELEASE_KEY_PASSWORD
 In GitHub Actions, decode `RELEASE_KEYSTORE_BASE64` into a temporary keystore file, then expose its path as `RELEASE_STORE_FILE` for the Gradle build.
 
 The repository also includes a tag-triggered release workflow at `.github/workflows/release.yml`.
-Pushing a tag such as `v1.0.1` will build a signed release APK, upload it as a workflow artifact, and attach it to the matching GitHub Release.
+Existing tags include `v1.0.0` and `v1.0.0-beta.1`, so the next stable tag should start from `v1.0.1` or later.
+Pushing a tag such as `v1.0.1` will build a signed release APK, upload it as a workflow artifact, and attach it to the matching GitHub Release on `Tinnci/RecordMaster`.
 
 # ©️ License
 
