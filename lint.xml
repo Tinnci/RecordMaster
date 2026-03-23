@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="IconLocation">
+        <ignore path="app/src/main/res/drawable/main_app_icon.png" />
+    </issue>
+
+    <issue id="UnusedResources">
+        <ignore path="app/src/main/res/mipmap-hdpi/ic_launcher.webp" />
+        <ignore path="app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" />
+    </issue>
+</lint>
